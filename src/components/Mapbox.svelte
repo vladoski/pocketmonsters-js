@@ -18,19 +18,31 @@
 			container,
 			style: 'mapbox://styles/mapbox/streets-v9',
 			center: [lon, lat],
-			zoom
+			zoom,
+			attributionControl: false, // Deletes the attribution control
+			logoPosition: 'top-left' // Moves the logo position up on the top left corner
 		});
 
+		// Moves the attribution up in the left corner
+		map.on('load', function() {
+			map.addControl(new mapboxgl.AttributionControl(), 'top-right');
+		});
+
+		// Could be useful for memory leaks
 		return () => {
 			map.remove();
 		};
 	});
+
+
 </script>
 
 <style>
-	div {
+	#mapbox {
+		position: absolute;
+		top: 0;
+		bottom: 0;
 		width: 100%;
-		height: 100%;
 	}
 </style>
 
@@ -38,7 +50,7 @@
 	<link rel="stylesheet" href="mapbox-gl.css">
 </svelte:head>
 
-<div bind:this={container}>
+<div id="mapbox" bind:this={container}>
 	{#if map}
 		<slot></slot>
 	{/if}
