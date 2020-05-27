@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import { register, getProfile, setProfile, getMap, getRanking, fightEat } from '../utils/apihandler.js'
+	import { push } from 'svelte-spa-router';
+	import { register, getProfile, setProfile, getMap, getRanking, fightEat } from '../utils/apihandler.js';
 	import { apiKeyStore, apiUrlStore } from '../store.js'
 
 	import Mapbox from '../components/Mapbox.svelte';
@@ -29,17 +30,17 @@
 <style>
 </style>
 {#await getMapPromise}
-<p>Fetching</p>
-{:then _}
-	<Mapbox
-		lat={45.4642}
-		lon={9.1896}
-		zoom={8.5}
-		{mapElements}>
-	</Mapbox>
-{:catch}
-<p>Error</p>
+	<p>Fetching</p>
+	{:then _}
+		<Mapbox
+			lat={45.4642}
+			lon={9.1896}
+			zoom={8.5}
+			{mapElements}>
+		</Mapbox>
+	{:catch}
+		<p>Error</p>
 {/await}
 <div class='absolute m-3 inset-x-0 bottom-0'>
-	<Button color="alert" icon="change_history" />
+	<Button color="primary" icon="account_circle" on:click={() => push('/profile') }/>
 </div>
