@@ -5,9 +5,11 @@
 	export let lat;
 	export let lon;
 	export let zoom;
+	export let mapElements;
 
 	let container;
 	let map;
+	let markers = [];
 
 	onMount(async () => {
 
@@ -23,9 +25,65 @@
 			logoPosition: 'top-left' // Moves the logo position up on the top left corner
 		});
 
+		map.addControl(new mapboxgl.NavigationControl({
+			showCompass: true,
+			showZoom: false
+		}));
+
+		const geolocate = new mapboxgl.GeolocateControl({
+			positionOptions: {
+				enableHighAccuracy: true,
+			},
+			trackUserLocation: true,
+			showUserLocation: true
+		});
+
 		// Moves the attribution up in the left corner
 		map.on('load', function() {
 			map.addControl(new mapboxgl.AttributionControl(), 'top-right');
+			geolocate.trigger();
+
+			if (mapElements !== undefined) {
+
+				mapElements.forEach(element => {
+					let icon = document.createElement('div');
+					icon.className = 'marker';
+					icon.id = element.id;
+					icon.style.width = '3rem';
+					icon.style.height = '3rem';
+					icon.style.backgroundSize = 'contain';
+
+					// TODO: refactor this
+					if (element.type == "CA") {
+						if (element.size == "M") {
+							icon.style.backgroundImage = 'url(img/candy_m.png)';
+						}
+						if (element.size == "L") {
+							icon.style.backgroundImage = 'url(img/candy_l.png)';
+						}
+						if (element.size == "S") {
+							icon.style.backgroundImage = 'url(img/candy_s.png)';
+						}
+					}
+					if (element.type == "MO") {
+						if (element.size == "M") {
+							icon.style.backgroundImage = 'url(img/monster_m.png)';
+						}
+						if (element.size == "L") {
+							icon.style.backgroundImage = 'url(img/monster_l.png)';
+						}
+						if (element.size == "S") {
+							icon.style.backgroundImage = 'url(img/monster_s.png)';
+						}
+					}
+
+					let newMarker = new mapboxgl.Marker(icon)
+						.setLngLat([parseFloat(element.lon), parseFloat(element.lat)])
+						.addTo(map);
+
+					markers = [newMarker, ...markers];
+				});
+			}
 		});
 
 		// Could be useful for memory leaks
@@ -33,7 +91,6 @@
 			map.remove();
 		};
 	});
-
 
 </script>
 
@@ -43,6 +100,13 @@
 		top: 0;
 		bottom: 0;
 		width: 100%;
+	}
+
+	.marker {
+		display: block;
+		border: none;
+		cursor: pointer;
+		padding: 0;
 	}
 </style>
 
