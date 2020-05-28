@@ -1,4 +1,10 @@
-/node_modules/
-/public/build/
+# Node
+npm-debug.log
+/node_modules
 
+# Phonegap
+/platforms
+/plugins
+
+# macOS filesystem store
 .DS_Store
