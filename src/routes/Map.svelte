@@ -44,3 +44,11 @@
 <div class='absolute m-3 inset-x-0 bottom-0'>
 	<Button color="primary" icon="account_circle" on:click={() => push('/profile') }/>
 </div>
+
+<div class='absolute m-3 left-0 bottom-0'>
+	<Button color="primary" icon="account_circle" on:click={() => push('/profile') }/>
+</div>
+
+<div class='absolute m-3 right-0 bottom-0'>
+	<Button color="primary" icon="view_list" on:click={() => push('/ranking') }/>
+</div>
