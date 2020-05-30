@@ -34,6 +34,9 @@
         </div>
         <div>
             <div class="flex justify-center">
+                <p class="body-1 font-bold">{profileData.username}</p>
+            </div>
+            <div class="flex justify-center">
                 <p class="body-1">Life points: {profileData.xp}</p>
             </div>
             <div class="flex justify-center">
