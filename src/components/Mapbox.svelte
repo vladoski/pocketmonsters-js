@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import mapboxgl from 'mapbox-gl';
+	import { push } from 'svelte-spa-router';
 
 	export let lat;
 	export let lon;
@@ -76,6 +77,11 @@
 							icon.style.backgroundImage = 'url(img/monster_s.png)';
 						}
 					}
+
+					// Goes to the fighteat passing the element id in the querystring
+					icon.addEventListener('click', () => {
+						push(`/fighteat?id=${icon.id}`);
+					});
 
 					let newMarker = new mapboxgl.Marker(icon)
 						.setLngLat([parseFloat(element.lon), parseFloat(element.lat)])

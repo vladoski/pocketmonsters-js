@@ -2,6 +2,7 @@ import Mapbox from './routes/Map.svelte';
 import Profile from './routes/Profile.svelte';
 import EditProfile from './routes/EditProfile.svelte';
 import Ranking from './routes/Ranking.svelte';
+import FightEat from './routes/FightEat.svelte';
 import NotFound from './routes/NotFound.svelte';
 
 const routes = {
@@ -9,6 +10,7 @@ const routes = {
     '/profile': Profile,
     '/profile/edit': EditProfile,
     '/ranking': Ranking,
+    '/fighteat': FightEat,
     '*': NotFound
 }
 

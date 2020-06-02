@@ -47,6 +47,19 @@ export async function getMap(url, session_id) {
     }
 }
 
+export async function getImage(url, session_id, target_id) {
+    try {
+        const res = await fetch(url + '/getimage.php', {
+            method: 'POST',
+            body: JSON.stringify({ session_id, target_id })
+        });
+
+        return res.json();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 export async function getRanking(url, session_id) {
     try {
         const res = await fetch(url + '/ranking.php', {
