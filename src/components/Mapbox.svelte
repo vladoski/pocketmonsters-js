@@ -107,13 +107,6 @@
 		bottom: 0;
 		width: 100%;
 	}
-
-	.marker {
-		display: block;
-		border: none;
-		cursor: pointer;
-		padding: 0;
-	}
 </style>
 
 <svelte:head>

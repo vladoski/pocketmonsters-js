@@ -28,13 +28,10 @@
 	let getMapPromise;
 	let queryString;
 	onMount(() => {
-		getMapPromise = getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+		getMapFromApi();
 
-		getMapPromise.then(res => {
-			mapElements = res.mapobjects;
-
-			mapElementsStore.set(mapElements);
-		});
+		// Refresh the map every 10 seconds
+		setInterval(getMapFromApi, 10000);
 
 		queryString = qs.parse($querystring);
 		console.log(queryString);
@@ -54,6 +51,16 @@
 		}
 	});
 	
+	function getMapFromApi() {
+		getMapPromise = getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+
+		getMapPromise.then(res => {
+			mapElements = res.mapobjects;
+
+			mapElementsStore.set(mapElements);
+		});
+	}
+
 	const unsubscribe = apiKeyStore.subscribe(key => {
 			apiKey = key;
 	});
@@ -69,7 +76,7 @@
 			lat={45.4642}
 			lon={9.1896}
 			zoom={8.5}
-			{mapElements}>
+			bind:mapElements={mapElements}>
 		</Mapbox>
 
 		<Snackbar bind:value={showSnackbar}>
