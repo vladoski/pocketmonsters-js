@@ -17,6 +17,7 @@
 	let profileData;
 	let snackbarTitle = '';
 	let showSnackbar = false;
+	let showMapElementTooFarSnackbar = false;
 
 	// TODO: set this in the store. Refactor this.
 	const getProfilePromise = getProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
@@ -30,8 +31,8 @@
 	onMount(() => {
 		getMapFromApi();
 
-		// Refresh the map every 10 seconds
-		setInterval(getMapFromApi, 10000);
+		// Refresh the map every 60 seconds
+		setInterval(getMapFromApi, 60000);
 
 		queryString = qs.parse($querystring);
 		console.log(queryString);
@@ -76,11 +77,16 @@
 			lat={45.4642}
 			lon={9.1896}
 			zoom={8.5}
-			bind:mapElements={mapElements}>
+			bind:mapElements={mapElements}
+			on:mapElementTooFar={() => {showMapElementTooFarSnackbar = true}}>
 		</Mapbox>
 
 		<Snackbar bind:value={showSnackbar}>
 			<div>{snackbarTitle} - XP:{queryString.xp} LP:{queryString.lp}</div>
+		</Snackbar>
+
+		<Snackbar bind:value={showMapElementTooFarSnackbar}>
+			<div>Oops, this is out of your range!</div>
 		</Snackbar>
 	{:catch}
 		<p>Error</p>

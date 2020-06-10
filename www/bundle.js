@@ -2684,6 +2684,10 @@ var app = (function () {
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+    function unwrapExports (x) {
+    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+    }
+
     function createCommonjsModule(fn, basedir, module) {
     	return module = {
     	  path: basedir,
@@ -2738,16 +2742,1057 @@ var app = (function () {
 
     });
 
+    var helpers = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    /**
+     * @module helpers
+     */
+    /**
+     * Earth Radius used with the Harvesine formula and approximates using a spherical (non-ellipsoid) Earth.
+     *
+     * @memberof helpers
+     * @type {number}
+     */
+    exports.earthRadius = 6371008.8;
+    /**
+     * Unit of measurement factors using a spherical (non-ellipsoid) earth radius.
+     *
+     * @memberof helpers
+     * @type {Object}
+     */
+    exports.factors = {
+        centimeters: exports.earthRadius * 100,
+        centimetres: exports.earthRadius * 100,
+        degrees: exports.earthRadius / 111325,
+        feet: exports.earthRadius * 3.28084,
+        inches: exports.earthRadius * 39.370,
+        kilometers: exports.earthRadius / 1000,
+        kilometres: exports.earthRadius / 1000,
+        meters: exports.earthRadius,
+        metres: exports.earthRadius,
+        miles: exports.earthRadius / 1609.344,
+        millimeters: exports.earthRadius * 1000,
+        millimetres: exports.earthRadius * 1000,
+        nauticalmiles: exports.earthRadius / 1852,
+        radians: 1,
+        yards: exports.earthRadius / 1.0936,
+    };
+    /**
+     * Units of measurement factors based on 1 meter.
+     *
+     * @memberof helpers
+     * @type {Object}
+     */
+    exports.unitsFactors = {
+        centimeters: 100,
+        centimetres: 100,
+        degrees: 1 / 111325,
+        feet: 3.28084,
+        inches: 39.370,
+        kilometers: 1 / 1000,
+        kilometres: 1 / 1000,
+        meters: 1,
+        metres: 1,
+        miles: 1 / 1609.344,
+        millimeters: 1000,
+        millimetres: 1000,
+        nauticalmiles: 1 / 1852,
+        radians: 1 / exports.earthRadius,
+        yards: 1 / 1.0936,
+    };
+    /**
+     * Area of measurement factors based on 1 square meter.
+     *
+     * @memberof helpers
+     * @type {Object}
+     */
+    exports.areaFactors = {
+        acres: 0.000247105,
+        centimeters: 10000,
+        centimetres: 10000,
+        feet: 10.763910417,
+        inches: 1550.003100006,
+        kilometers: 0.000001,
+        kilometres: 0.000001,
+        meters: 1,
+        metres: 1,
+        miles: 3.86e-7,
+        millimeters: 1000000,
+        millimetres: 1000000,
+        yards: 1.195990046,
+    };
+    /**
+     * Wraps a GeoJSON {@link Geometry} in a GeoJSON {@link Feature}.
+     *
+     * @name feature
+     * @param {Geometry} geometry input geometry
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature} a GeoJSON Feature
+     * @example
+     * var geometry = {
+     *   "type": "Point",
+     *   "coordinates": [110, 50]
+     * };
+     *
+     * var feature = turf.feature(geometry);
+     *
+     * //=feature
+     */
+    function feature(geom, properties, options) {
+        if (options === void 0) { options = {}; }
+        var feat = { type: "Feature" };
+        if (options.id === 0 || options.id) {
+            feat.id = options.id;
+        }
+        if (options.bbox) {
+            feat.bbox = options.bbox;
+        }
+        feat.properties = properties || {};
+        feat.geometry = geom;
+        return feat;
+    }
+    exports.feature = feature;
+    /**
+     * Creates a GeoJSON {@link Geometry} from a Geometry string type & coordinates.
+     * For GeometryCollection type use `helpers.geometryCollection`
+     *
+     * @name geometry
+     * @param {string} type Geometry Type
+     * @param {Array<any>} coordinates Coordinates
+     * @param {Object} [options={}] Optional Parameters
+     * @returns {Geometry} a GeoJSON Geometry
+     * @example
+     * var type = "Point";
+     * var coordinates = [110, 50];
+     * var geometry = turf.geometry(type, coordinates);
+     * // => geometry
+     */
+    function geometry(type, coordinates, options) {
+        switch (type) {
+            case "Point": return point(coordinates).geometry;
+            case "LineString": return lineString(coordinates).geometry;
+            case "Polygon": return polygon(coordinates).geometry;
+            case "MultiPoint": return multiPoint(coordinates).geometry;
+            case "MultiLineString": return multiLineString(coordinates).geometry;
+            case "MultiPolygon": return multiPolygon(coordinates).geometry;
+            default: throw new Error(type + " is invalid");
+        }
+    }
+    exports.geometry = geometry;
+    /**
+     * Creates a {@link Point} {@link Feature} from a Position.
+     *
+     * @name point
+     * @param {Array<number>} coordinates longitude, latitude position (each in decimal degrees)
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<Point>} a Point feature
+     * @example
+     * var point = turf.point([-75.343, 39.984]);
+     *
+     * //=point
+     */
+    function point(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        var geom = {
+            type: "Point",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.point = point;
+    /**
+     * Creates a {@link Point} {@link FeatureCollection} from an Array of Point coordinates.
+     *
+     * @name points
+     * @param {Array<Array<number>>} coordinates an array of Points
+     * @param {Object} [properties={}] Translate these properties to each Feature
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north]
+     * associated with the FeatureCollection
+     * @param {string|number} [options.id] Identifier associated with the FeatureCollection
+     * @returns {FeatureCollection<Point>} Point Feature
+     * @example
+     * var points = turf.points([
+     *   [-75, 39],
+     *   [-80, 45],
+     *   [-78, 50]
+     * ]);
+     *
+     * //=points
+     */
+    function points(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        return featureCollection(coordinates.map(function (coords) {
+            return point(coords, properties);
+        }), options);
+    }
+    exports.points = points;
+    /**
+     * Creates a {@link Polygon} {@link Feature} from an Array of LinearRings.
+     *
+     * @name polygon
+     * @param {Array<Array<Array<number>>>} coordinates an array of LinearRings
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<Polygon>} Polygon Feature
+     * @example
+     * var polygon = turf.polygon([[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]], { name: 'poly1' });
+     *
+     * //=polygon
+     */
+    function polygon(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        for (var _i = 0, coordinates_1 = coordinates; _i < coordinates_1.length; _i++) {
+            var ring = coordinates_1[_i];
+            if (ring.length < 4) {
+                throw new Error("Each LinearRing of a Polygon must have 4 or more Positions.");
+            }
+            for (var j = 0; j < ring[ring.length - 1].length; j++) {
+                // Check if first point of Polygon contains two numbers
+                if (ring[ring.length - 1][j] !== ring[0][j]) {
+                    throw new Error("First and last Position are not equivalent.");
+                }
+            }
+        }
+        var geom = {
+            type: "Polygon",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.polygon = polygon;
+    /**
+     * Creates a {@link Polygon} {@link FeatureCollection} from an Array of Polygon coordinates.
+     *
+     * @name polygons
+     * @param {Array<Array<Array<Array<number>>>>} coordinates an array of Polygon coordinates
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the FeatureCollection
+     * @returns {FeatureCollection<Polygon>} Polygon FeatureCollection
+     * @example
+     * var polygons = turf.polygons([
+     *   [[[-5, 52], [-4, 56], [-2, 51], [-7, 54], [-5, 52]]],
+     *   [[[-15, 42], [-14, 46], [-12, 41], [-17, 44], [-15, 42]]],
+     * ]);
+     *
+     * //=polygons
+     */
+    function polygons(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        return featureCollection(coordinates.map(function (coords) {
+            return polygon(coords, properties);
+        }), options);
+    }
+    exports.polygons = polygons;
+    /**
+     * Creates a {@link LineString} {@link Feature} from an Array of Positions.
+     *
+     * @name lineString
+     * @param {Array<Array<number>>} coordinates an array of Positions
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<LineString>} LineString Feature
+     * @example
+     * var linestring1 = turf.lineString([[-24, 63], [-23, 60], [-25, 65], [-20, 69]], {name: 'line 1'});
+     * var linestring2 = turf.lineString([[-14, 43], [-13, 40], [-15, 45], [-10, 49]], {name: 'line 2'});
+     *
+     * //=linestring1
+     * //=linestring2
+     */
+    function lineString(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        if (coordinates.length < 2) {
+            throw new Error("coordinates must be an array of two or more positions");
+        }
+        var geom = {
+            type: "LineString",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.lineString = lineString;
+    /**
+     * Creates a {@link LineString} {@link FeatureCollection} from an Array of LineString coordinates.
+     *
+     * @name lineStrings
+     * @param {Array<Array<Array<number>>>} coordinates an array of LinearRings
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north]
+     * associated with the FeatureCollection
+     * @param {string|number} [options.id] Identifier associated with the FeatureCollection
+     * @returns {FeatureCollection<LineString>} LineString FeatureCollection
+     * @example
+     * var linestrings = turf.lineStrings([
+     *   [[-24, 63], [-23, 60], [-25, 65], [-20, 69]],
+     *   [[-14, 43], [-13, 40], [-15, 45], [-10, 49]]
+     * ]);
+     *
+     * //=linestrings
+     */
+    function lineStrings(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        return featureCollection(coordinates.map(function (coords) {
+            return lineString(coords, properties);
+        }), options);
+    }
+    exports.lineStrings = lineStrings;
+    /**
+     * Takes one or more {@link Feature|Features} and creates a {@link FeatureCollection}.
+     *
+     * @name featureCollection
+     * @param {Feature[]} features input features
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {FeatureCollection} FeatureCollection of Features
+     * @example
+     * var locationA = turf.point([-75.343, 39.984], {name: 'Location A'});
+     * var locationB = turf.point([-75.833, 39.284], {name: 'Location B'});
+     * var locationC = turf.point([-75.534, 39.123], {name: 'Location C'});
+     *
+     * var collection = turf.featureCollection([
+     *   locationA,
+     *   locationB,
+     *   locationC
+     * ]);
+     *
+     * //=collection
+     */
+    function featureCollection(features, options) {
+        if (options === void 0) { options = {}; }
+        var fc = { type: "FeatureCollection" };
+        if (options.id) {
+            fc.id = options.id;
+        }
+        if (options.bbox) {
+            fc.bbox = options.bbox;
+        }
+        fc.features = features;
+        return fc;
+    }
+    exports.featureCollection = featureCollection;
+    /**
+     * Creates a {@link Feature<MultiLineString>} based on a
+     * coordinate array. Properties can be added optionally.
+     *
+     * @name multiLineString
+     * @param {Array<Array<Array<number>>>} coordinates an array of LineStrings
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<MultiLineString>} a MultiLineString feature
+     * @throws {Error} if no coordinates are passed
+     * @example
+     * var multiLine = turf.multiLineString([[[0,0],[10,10]]]);
+     *
+     * //=multiLine
+     */
+    function multiLineString(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        var geom = {
+            type: "MultiLineString",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.multiLineString = multiLineString;
+    /**
+     * Creates a {@link Feature<MultiPoint>} based on a
+     * coordinate array. Properties can be added optionally.
+     *
+     * @name multiPoint
+     * @param {Array<Array<number>>} coordinates an array of Positions
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<MultiPoint>} a MultiPoint feature
+     * @throws {Error} if no coordinates are passed
+     * @example
+     * var multiPt = turf.multiPoint([[0,0],[10,10]]);
+     *
+     * //=multiPt
+     */
+    function multiPoint(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        var geom = {
+            type: "MultiPoint",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.multiPoint = multiPoint;
+    /**
+     * Creates a {@link Feature<MultiPolygon>} based on a
+     * coordinate array. Properties can be added optionally.
+     *
+     * @name multiPolygon
+     * @param {Array<Array<Array<Array<number>>>>} coordinates an array of Polygons
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<MultiPolygon>} a multipolygon feature
+     * @throws {Error} if no coordinates are passed
+     * @example
+     * var multiPoly = turf.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
+     *
+     * //=multiPoly
+     *
+     */
+    function multiPolygon(coordinates, properties, options) {
+        if (options === void 0) { options = {}; }
+        var geom = {
+            type: "MultiPolygon",
+            coordinates: coordinates,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.multiPolygon = multiPolygon;
+    /**
+     * Creates a {@link Feature<GeometryCollection>} based on a
+     * coordinate array. Properties can be added optionally.
+     *
+     * @name geometryCollection
+     * @param {Array<Geometry>} geometries an array of GeoJSON Geometries
+     * @param {Object} [properties={}] an Object of key-value pairs to add as properties
+     * @param {Object} [options={}] Optional Parameters
+     * @param {Array<number>} [options.bbox] Bounding Box Array [west, south, east, north] associated with the Feature
+     * @param {string|number} [options.id] Identifier associated with the Feature
+     * @returns {Feature<GeometryCollection>} a GeoJSON GeometryCollection Feature
+     * @example
+     * var pt = turf.geometry("Point", [100, 0]);
+     * var line = turf.geometry("LineString", [[101, 0], [102, 1]]);
+     * var collection = turf.geometryCollection([pt, line]);
+     *
+     * // => collection
+     */
+    function geometryCollection(geometries, properties, options) {
+        if (options === void 0) { options = {}; }
+        var geom = {
+            type: "GeometryCollection",
+            geometries: geometries,
+        };
+        return feature(geom, properties, options);
+    }
+    exports.geometryCollection = geometryCollection;
+    /**
+     * Round number to precision
+     *
+     * @param {number} num Number
+     * @param {number} [precision=0] Precision
+     * @returns {number} rounded number
+     * @example
+     * turf.round(120.4321)
+     * //=120
+     *
+     * turf.round(120.4321, 2)
+     * //=120.43
+     */
+    function round(num, precision) {
+        if (precision === void 0) { precision = 0; }
+        if (precision && !(precision >= 0)) {
+            throw new Error("precision must be a positive number");
+        }
+        var multiplier = Math.pow(10, precision || 0);
+        return Math.round(num * multiplier) / multiplier;
+    }
+    exports.round = round;
+    /**
+     * Convert a distance measurement (assuming a spherical Earth) from radians to a more friendly unit.
+     * Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
+     *
+     * @name radiansToLength
+     * @param {number} radians in radians across the sphere
+     * @param {string} [units="kilometers"] can be degrees, radians, miles, or kilometers inches, yards, metres,
+     * meters, kilometres, kilometers.
+     * @returns {number} distance
+     */
+    function radiansToLength(radians, units) {
+        if (units === void 0) { units = "kilometers"; }
+        var factor = exports.factors[units];
+        if (!factor) {
+            throw new Error(units + " units is invalid");
+        }
+        return radians * factor;
+    }
+    exports.radiansToLength = radiansToLength;
+    /**
+     * Convert a distance measurement (assuming a spherical Earth) from a real-world unit into radians
+     * Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
+     *
+     * @name lengthToRadians
+     * @param {number} distance in real units
+     * @param {string} [units="kilometers"] can be degrees, radians, miles, or kilometers inches, yards, metres,
+     * meters, kilometres, kilometers.
+     * @returns {number} radians
+     */
+    function lengthToRadians(distance, units) {
+        if (units === void 0) { units = "kilometers"; }
+        var factor = exports.factors[units];
+        if (!factor) {
+            throw new Error(units + " units is invalid");
+        }
+        return distance / factor;
+    }
+    exports.lengthToRadians = lengthToRadians;
+    /**
+     * Convert a distance measurement (assuming a spherical Earth) from a real-world unit into degrees
+     * Valid units: miles, nauticalmiles, inches, yards, meters, metres, centimeters, kilometres, feet
+     *
+     * @name lengthToDegrees
+     * @param {number} distance in real units
+     * @param {string} [units="kilometers"] can be degrees, radians, miles, or kilometers inches, yards, metres,
+     * meters, kilometres, kilometers.
+     * @returns {number} degrees
+     */
+    function lengthToDegrees(distance, units) {
+        return radiansToDegrees(lengthToRadians(distance, units));
+    }
+    exports.lengthToDegrees = lengthToDegrees;
+    /**
+     * Converts any bearing angle from the north line direction (positive clockwise)
+     * and returns an angle between 0-360 degrees (positive clockwise), 0 being the north line
+     *
+     * @name bearingToAzimuth
+     * @param {number} bearing angle, between -180 and +180 degrees
+     * @returns {number} angle between 0 and 360 degrees
+     */
+    function bearingToAzimuth(bearing) {
+        var angle = bearing % 360;
+        if (angle < 0) {
+            angle += 360;
+        }
+        return angle;
+    }
+    exports.bearingToAzimuth = bearingToAzimuth;
+    /**
+     * Converts an angle in radians to degrees
+     *
+     * @name radiansToDegrees
+     * @param {number} radians angle in radians
+     * @returns {number} degrees between 0 and 360 degrees
+     */
+    function radiansToDegrees(radians) {
+        var degrees = radians % (2 * Math.PI);
+        return degrees * 180 / Math.PI;
+    }
+    exports.radiansToDegrees = radiansToDegrees;
+    /**
+     * Converts an angle in degrees to radians
+     *
+     * @name degreesToRadians
+     * @param {number} degrees angle between 0 and 360 degrees
+     * @returns {number} angle in radians
+     */
+    function degreesToRadians(degrees) {
+        var radians = degrees % 360;
+        return radians * Math.PI / 180;
+    }
+    exports.degreesToRadians = degreesToRadians;
+    /**
+     * Converts a length to the requested unit.
+     * Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
+     *
+     * @param {number} length to be converted
+     * @param {Units} [originalUnit="kilometers"] of the length
+     * @param {Units} [finalUnit="kilometers"] returned unit
+     * @returns {number} the converted length
+     */
+    function convertLength(length, originalUnit, finalUnit) {
+        if (originalUnit === void 0) { originalUnit = "kilometers"; }
+        if (finalUnit === void 0) { finalUnit = "kilometers"; }
+        if (!(length >= 0)) {
+            throw new Error("length must be a positive number");
+        }
+        return radiansToLength(lengthToRadians(length, originalUnit), finalUnit);
+    }
+    exports.convertLength = convertLength;
+    /**
+     * Converts a area to the requested unit.
+     * Valid units: kilometers, kilometres, meters, metres, centimetres, millimeters, acres, miles, yards, feet, inches
+     * @param {number} area to be converted
+     * @param {Units} [originalUnit="meters"] of the distance
+     * @param {Units} [finalUnit="kilometers"] returned unit
+     * @returns {number} the converted distance
+     */
+    function convertArea(area, originalUnit, finalUnit) {
+        if (originalUnit === void 0) { originalUnit = "meters"; }
+        if (finalUnit === void 0) { finalUnit = "kilometers"; }
+        if (!(area >= 0)) {
+            throw new Error("area must be a positive number");
+        }
+        var startFactor = exports.areaFactors[originalUnit];
+        if (!startFactor) {
+            throw new Error("invalid original units");
+        }
+        var finalFactor = exports.areaFactors[finalUnit];
+        if (!finalFactor) {
+            throw new Error("invalid final units");
+        }
+        return (area / startFactor) * finalFactor;
+    }
+    exports.convertArea = convertArea;
+    /**
+     * isNumber
+     *
+     * @param {*} num Number to validate
+     * @returns {boolean} true/false
+     * @example
+     * turf.isNumber(123)
+     * //=true
+     * turf.isNumber('foo')
+     * //=false
+     */
+    function isNumber(num) {
+        return !isNaN(num) && num !== null && !Array.isArray(num) && !/^\s*$/.test(num);
+    }
+    exports.isNumber = isNumber;
+    /**
+     * isObject
+     *
+     * @param {*} input variable to validate
+     * @returns {boolean} true/false
+     * @example
+     * turf.isObject({elevation: 10})
+     * //=true
+     * turf.isObject('foo')
+     * //=false
+     */
+    function isObject(input) {
+        return (!!input) && (input.constructor === Object);
+    }
+    exports.isObject = isObject;
+    /**
+     * Validate BBox
+     *
+     * @private
+     * @param {Array<number>} bbox BBox to validate
+     * @returns {void}
+     * @throws Error if BBox is not valid
+     * @example
+     * validateBBox([-180, -40, 110, 50])
+     * //=OK
+     * validateBBox([-180, -40])
+     * //=Error
+     * validateBBox('Foo')
+     * //=Error
+     * validateBBox(5)
+     * //=Error
+     * validateBBox(null)
+     * //=Error
+     * validateBBox(undefined)
+     * //=Error
+     */
+    function validateBBox(bbox) {
+        if (!bbox) {
+            throw new Error("bbox is required");
+        }
+        if (!Array.isArray(bbox)) {
+            throw new Error("bbox must be an Array");
+        }
+        if (bbox.length !== 4 && bbox.length !== 6) {
+            throw new Error("bbox must be an Array of 4 or 6 numbers");
+        }
+        bbox.forEach(function (num) {
+            if (!isNumber(num)) {
+                throw new Error("bbox must only contain numbers");
+            }
+        });
+    }
+    exports.validateBBox = validateBBox;
+    /**
+     * Validate Id
+     *
+     * @private
+     * @param {string|number} id Id to validate
+     * @returns {void}
+     * @throws Error if Id is not valid
+     * @example
+     * validateId([-180, -40, 110, 50])
+     * //=Error
+     * validateId([-180, -40])
+     * //=Error
+     * validateId('Foo')
+     * //=OK
+     * validateId(5)
+     * //=OK
+     * validateId(null)
+     * //=Error
+     * validateId(undefined)
+     * //=Error
+     */
+    function validateId(id) {
+        if (!id) {
+            throw new Error("id is required");
+        }
+        if (["string", "number"].indexOf(typeof id) === -1) {
+            throw new Error("id must be a number or a string");
+        }
+    }
+    exports.validateId = validateId;
+    // Deprecated methods
+    function radians2degrees() {
+        throw new Error("method has been renamed to `radiansToDegrees`");
+    }
+    exports.radians2degrees = radians2degrees;
+    function degrees2radians() {
+        throw new Error("method has been renamed to `degreesToRadians`");
+    }
+    exports.degrees2radians = degrees2radians;
+    function distanceToDegrees() {
+        throw new Error("method has been renamed to `lengthToDegrees`");
+    }
+    exports.distanceToDegrees = distanceToDegrees;
+    function distanceToRadians() {
+        throw new Error("method has been renamed to `lengthToRadians`");
+    }
+    exports.distanceToRadians = distanceToRadians;
+    function radiansToDistance() {
+        throw new Error("method has been renamed to `radiansToLength`");
+    }
+    exports.radiansToDistance = radiansToDistance;
+    function bearingToAngle() {
+        throw new Error("method has been renamed to `bearingToAzimuth`");
+    }
+    exports.bearingToAngle = bearingToAngle;
+    function convertDistance() {
+        throw new Error("method has been renamed to `convertLength`");
+    }
+    exports.convertDistance = convertDistance;
+    });
+
+    unwrapExports(helpers);
+    var helpers_1 = helpers.earthRadius;
+    var helpers_2 = helpers.factors;
+    var helpers_3 = helpers.unitsFactors;
+    var helpers_4 = helpers.areaFactors;
+    var helpers_5 = helpers.feature;
+    var helpers_6 = helpers.geometry;
+    var helpers_7 = helpers.point;
+    var helpers_8 = helpers.points;
+    var helpers_9 = helpers.polygon;
+    var helpers_10 = helpers.polygons;
+    var helpers_11 = helpers.lineString;
+    var helpers_12 = helpers.lineStrings;
+    var helpers_13 = helpers.featureCollection;
+    var helpers_14 = helpers.multiLineString;
+    var helpers_15 = helpers.multiPoint;
+    var helpers_16 = helpers.multiPolygon;
+    var helpers_17 = helpers.geometryCollection;
+    var helpers_18 = helpers.round;
+    var helpers_19 = helpers.radiansToLength;
+    var helpers_20 = helpers.lengthToRadians;
+    var helpers_21 = helpers.lengthToDegrees;
+    var helpers_22 = helpers.bearingToAzimuth;
+    var helpers_23 = helpers.radiansToDegrees;
+    var helpers_24 = helpers.degreesToRadians;
+    var helpers_25 = helpers.convertLength;
+    var helpers_26 = helpers.convertArea;
+    var helpers_27 = helpers.isNumber;
+    var helpers_28 = helpers.isObject;
+    var helpers_29 = helpers.validateBBox;
+    var helpers_30 = helpers.validateId;
+    var helpers_31 = helpers.radians2degrees;
+    var helpers_32 = helpers.degrees2radians;
+    var helpers_33 = helpers.distanceToDegrees;
+    var helpers_34 = helpers.distanceToRadians;
+    var helpers_35 = helpers.radiansToDistance;
+    var helpers_36 = helpers.bearingToAngle;
+    var helpers_37 = helpers.convertDistance;
+
+    var invariant = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    /**
+     * Unwrap a coordinate from a Point Feature, Geometry or a single coordinate.
+     *
+     * @name getCoord
+     * @param {Array<number>|Geometry<Point>|Feature<Point>} coord GeoJSON Point or an Array of numbers
+     * @returns {Array<number>} coordinates
+     * @example
+     * var pt = turf.point([10, 10]);
+     *
+     * var coord = turf.getCoord(pt);
+     * //= [10, 10]
+     */
+    function getCoord(coord) {
+        if (!coord) {
+            throw new Error("coord is required");
+        }
+        if (!Array.isArray(coord)) {
+            if (coord.type === "Feature" && coord.geometry !== null && coord.geometry.type === "Point") {
+                return coord.geometry.coordinates;
+            }
+            if (coord.type === "Point") {
+                return coord.coordinates;
+            }
+        }
+        if (Array.isArray(coord) && coord.length >= 2 && !Array.isArray(coord[0]) && !Array.isArray(coord[1])) {
+            return coord;
+        }
+        throw new Error("coord must be GeoJSON Point or an Array of numbers");
+    }
+    exports.getCoord = getCoord;
+    /**
+     * Unwrap coordinates from a Feature, Geometry Object or an Array
+     *
+     * @name getCoords
+     * @param {Array<any>|Geometry|Feature} coords Feature, Geometry Object or an Array
+     * @returns {Array<any>} coordinates
+     * @example
+     * var poly = turf.polygon([[[119.32, -8.7], [119.55, -8.69], [119.51, -8.54], [119.32, -8.7]]]);
+     *
+     * var coords = turf.getCoords(poly);
+     * //= [[[119.32, -8.7], [119.55, -8.69], [119.51, -8.54], [119.32, -8.7]]]
+     */
+    function getCoords(coords) {
+        if (Array.isArray(coords)) {
+            return coords;
+        }
+        // Feature
+        if (coords.type === "Feature") {
+            if (coords.geometry !== null) {
+                return coords.geometry.coordinates;
+            }
+        }
+        else {
+            // Geometry
+            if (coords.coordinates) {
+                return coords.coordinates;
+            }
+        }
+        throw new Error("coords must be GeoJSON Feature, Geometry Object or an Array");
+    }
+    exports.getCoords = getCoords;
+    /**
+     * Checks if coordinates contains a number
+     *
+     * @name containsNumber
+     * @param {Array<any>} coordinates GeoJSON Coordinates
+     * @returns {boolean} true if Array contains a number
+     */
+    function containsNumber(coordinates) {
+        if (coordinates.length > 1 && helpers.isNumber(coordinates[0]) && helpers.isNumber(coordinates[1])) {
+            return true;
+        }
+        if (Array.isArray(coordinates[0]) && coordinates[0].length) {
+            return containsNumber(coordinates[0]);
+        }
+        throw new Error("coordinates must only contain numbers");
+    }
+    exports.containsNumber = containsNumber;
+    /**
+     * Enforce expectations about types of GeoJSON objects for Turf.
+     *
+     * @name geojsonType
+     * @param {GeoJSON} value any GeoJSON object
+     * @param {string} type expected GeoJSON type
+     * @param {string} name name of calling function
+     * @throws {Error} if value is not the expected type.
+     */
+    function geojsonType(value, type, name) {
+        if (!type || !name) {
+            throw new Error("type and name required");
+        }
+        if (!value || value.type !== type) {
+            throw new Error("Invalid input to " + name + ": must be a " + type + ", given " + value.type);
+        }
+    }
+    exports.geojsonType = geojsonType;
+    /**
+     * Enforce expectations about types of {@link Feature} inputs for Turf.
+     * Internally this uses {@link geojsonType} to judge geometry types.
+     *
+     * @name featureOf
+     * @param {Feature} feature a feature with an expected geometry type
+     * @param {string} type expected GeoJSON type
+     * @param {string} name name of calling function
+     * @throws {Error} error if value is not the expected type.
+     */
+    function featureOf(feature, type, name) {
+        if (!feature) {
+            throw new Error("No feature passed");
+        }
+        if (!name) {
+            throw new Error(".featureOf() requires a name");
+        }
+        if (!feature || feature.type !== "Feature" || !feature.geometry) {
+            throw new Error("Invalid input to " + name + ", Feature with geometry required");
+        }
+        if (!feature.geometry || feature.geometry.type !== type) {
+            throw new Error("Invalid input to " + name + ": must be a " + type + ", given " + feature.geometry.type);
+        }
+    }
+    exports.featureOf = featureOf;
+    /**
+     * Enforce expectations about types of {@link FeatureCollection} inputs for Turf.
+     * Internally this uses {@link geojsonType} to judge geometry types.
+     *
+     * @name collectionOf
+     * @param {FeatureCollection} featureCollection a FeatureCollection for which features will be judged
+     * @param {string} type expected GeoJSON type
+     * @param {string} name name of calling function
+     * @throws {Error} if value is not the expected type.
+     */
+    function collectionOf(featureCollection, type, name) {
+        if (!featureCollection) {
+            throw new Error("No featureCollection passed");
+        }
+        if (!name) {
+            throw new Error(".collectionOf() requires a name");
+        }
+        if (!featureCollection || featureCollection.type !== "FeatureCollection") {
+            throw new Error("Invalid input to " + name + ", FeatureCollection required");
+        }
+        for (var _i = 0, _a = featureCollection.features; _i < _a.length; _i++) {
+            var feature = _a[_i];
+            if (!feature || feature.type !== "Feature" || !feature.geometry) {
+                throw new Error("Invalid input to " + name + ", Feature with geometry required");
+            }
+            if (!feature.geometry || feature.geometry.type !== type) {
+                throw new Error("Invalid input to " + name + ": must be a " + type + ", given " + feature.geometry.type);
+            }
+        }
+    }
+    exports.collectionOf = collectionOf;
+    /**
+     * Get Geometry from Feature or Geometry Object
+     *
+     * @param {Feature|Geometry} geojson GeoJSON Feature or Geometry Object
+     * @returns {Geometry|null} GeoJSON Geometry Object
+     * @throws {Error} if geojson is not a Feature or Geometry Object
+     * @example
+     * var point = {
+     *   "type": "Feature",
+     *   "properties": {},
+     *   "geometry": {
+     *     "type": "Point",
+     *     "coordinates": [110, 40]
+     *   }
+     * }
+     * var geom = turf.getGeom(point)
+     * //={"type": "Point", "coordinates": [110, 40]}
+     */
+    function getGeom(geojson) {
+        if (geojson.type === "Feature") {
+            return geojson.geometry;
+        }
+        return geojson;
+    }
+    exports.getGeom = getGeom;
+    /**
+     * Get GeoJSON object's type, Geometry type is prioritize.
+     *
+     * @param {GeoJSON} geojson GeoJSON object
+     * @param {string} [name="geojson"] name of the variable to display in error message
+     * @returns {string} GeoJSON type
+     * @example
+     * var point = {
+     *   "type": "Feature",
+     *   "properties": {},
+     *   "geometry": {
+     *     "type": "Point",
+     *     "coordinates": [110, 40]
+     *   }
+     * }
+     * var geom = turf.getType(point)
+     * //="Point"
+     */
+    function getType(geojson, name) {
+        if (geojson.type === "FeatureCollection") {
+            return "FeatureCollection";
+        }
+        if (geojson.type === "GeometryCollection") {
+            return "GeometryCollection";
+        }
+        if (geojson.type === "Feature" && geojson.geometry !== null) {
+            return geojson.geometry.type;
+        }
+        return geojson.type;
+    }
+    exports.getType = getType;
+    });
+
+    unwrapExports(invariant);
+    var invariant_1 = invariant.getCoord;
+    var invariant_2 = invariant.getCoords;
+    var invariant_3 = invariant.containsNumber;
+    var invariant_4 = invariant.geojsonType;
+    var invariant_5 = invariant.featureOf;
+    var invariant_6 = invariant.collectionOf;
+    var invariant_7 = invariant.getGeom;
+    var invariant_8 = invariant.getType;
+
+    var distance_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+    //http://en.wikipedia.org/wiki/Haversine_formula
+    //http://www.movable-type.co.uk/scripts/latlong.html
+    /**
+     * Calculates the distance between two {@link Point|points} in degrees, radians, miles, or kilometers.
+     * This uses the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
+     *
+     * @name distance
+     * @param {Coord} from origin point
+     * @param {Coord} to destination point
+     * @param {Object} [options={}] Optional parameters
+     * @param {string} [options.units='kilometers'] can be degrees, radians, miles, or kilometers
+     * @returns {number} distance between the two points
+     * @example
+     * var from = turf.point([-75.343, 39.984]);
+     * var to = turf.point([-75.534, 39.123]);
+     * var options = {units: 'miles'};
+     *
+     * var distance = turf.distance(from, to, options);
+     *
+     * //addToMap
+     * var addToMap = [from, to];
+     * from.properties.distance = distance;
+     * to.properties.distance = distance;
+     */
+    function distance(from, to, options) {
+        if (options === void 0) { options = {}; }
+        var coordinates1 = invariant.getCoord(from);
+        var coordinates2 = invariant.getCoord(to);
+        var dLat = helpers.degreesToRadians((coordinates2[1] - coordinates1[1]));
+        var dLon = helpers.degreesToRadians((coordinates2[0] - coordinates1[0]));
+        var lat1 = helpers.degreesToRadians(coordinates1[1]);
+        var lat2 = helpers.degreesToRadians(coordinates2[1]);
+        var a = Math.pow(Math.sin(dLat / 2), 2) +
+            Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        return helpers.radiansToLength(2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)), options.units);
+    }
+    exports.default = distance;
+    });
+
+    var distance = unwrapExports(distance_1);
+
     /* src/components/Mapbox.svelte generated by Svelte v3.22.3 */
 
-    const { document: document_1 } = globals;
+    const { console: console_1$1, document: document_1 } = globals;
     const file = "src/components/Mapbox.svelte";
 
-    // (117:1) {#if map}
+    // (147:1) {#if map}
     function create_if_block$1(ctx) {
     	let current;
-    	const default_slot_template = /*$$slots*/ ctx[9].default;
-    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[8], null);
+    	const default_slot_template = /*$$slots*/ ctx[11].default;
+    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[10], null);
 
     	const block = {
     		c: function create() {
@@ -2762,8 +3807,8 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (default_slot) {
-    				if (default_slot.p && dirty & /*$$scope*/ 256) {
-    					default_slot.p(get_slot_context(default_slot_template, ctx, /*$$scope*/ ctx[8], null), get_slot_changes(default_slot_template, /*$$scope*/ ctx[8], dirty, null));
+    				if (default_slot.p && dirty & /*$$scope*/ 1024) {
+    					default_slot.p(get_slot_context(default_slot_template, ctx, /*$$scope*/ ctx[10], null), get_slot_changes(default_slot_template, /*$$scope*/ ctx[10], dirty, null));
     				}
     			}
     		},
@@ -2785,7 +3830,7 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(117:1) {#if map}",
+    		source: "(147:1) {#if map}",
     		ctx
     	});
 
@@ -2807,10 +3852,10 @@ var app = (function () {
     			if (if_block) if_block.c();
     			attr_dev(link, "rel", "stylesheet");
     			attr_dev(link, "href", "mapbox-gl.css");
-    			add_location(link, file, 112, 1, 2731);
+    			add_location(link, file, 142, 1, 3592);
     			attr_dev(div, "id", "mapbox");
     			attr_dev(div, "class", "svelte-1w4l22h");
-    			add_location(div, file, 115, 0, 2792);
+    			add_location(div, file, 145, 0, 3653);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -2820,7 +3865,7 @@ var app = (function () {
     			insert_dev(target, t, anchor);
     			insert_dev(target, div, anchor);
     			if (if_block) if_block.m(div, null);
-    			/*div_binding*/ ctx[10](div);
+    			/*div_binding*/ ctx[12](div);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
@@ -2861,7 +3906,7 @@ var app = (function () {
     			if (detaching) detach_dev(t);
     			if (detaching) detach_dev(div);
     			if (if_block) if_block.d();
-    			/*div_binding*/ ctx[10](null);
+    			/*div_binding*/ ctx[12](null);
     		}
     	};
 
@@ -2881,9 +3926,11 @@ var app = (function () {
     	let { lon } = $$props;
     	let { zoom } = $$props;
     	let { mapElements } = $$props;
+    	const dispatch = createEventDispatcher();
     	let container;
     	let map;
     	let markers = [];
+    	let coords = [];
 
     	onMount(async () => {
     		// Default Mapbox API key from the docs
@@ -2900,6 +3947,12 @@ var app = (function () {
     			}));
 
     		map.addControl(new mapboxGl.NavigationControl({ showCompass: true, showZoom: false }));
+
+    		// Add location marker on the map
+    		map.addControl(new mapboxGl.GeolocateControl({
+    				positionOptions: { enableHighAccuracy: true },
+    				trackUserLocation: true
+    			}));
 
     		const geolocate = new mapboxGl.GeolocateControl({
     				positionOptions: { enableHighAccuracy: true },
@@ -2952,7 +4005,12 @@ var app = (function () {
 
     					// Goes to the fighteat passing the element id in the querystring
     					icon.addEventListener("click", () => {
-    						push(`/fighteat?id=${icon.id}`);
+    						// If the distance between the mapelement and the player is greater than half a km then fighteat else display error message
+    						if (coords.length == 2 && distance([element.lat, element.lon], coords) == 0.5) {
+    							push(`/fighteat?id=${icon.id}`);
+    						} else {
+    							dispatch("mapElementTooFar");
+    						}
     					});
 
     					let newMarker = new mapboxGl.Marker(icon).setLngLat([parseFloat(element.lon), parseFloat(element.lat)]).addTo(map);
@@ -2960,6 +4018,17 @@ var app = (function () {
     				});
     			}
     		});
+
+    		navigator.geolocation.getCurrentPosition(
+    			position => {
+    				console.log(position.coords);
+    				coords = [position.coords.latitude, position.coords.longitude];
+    			},
+    			err => {
+    				// TODO: handler errors if the location retrieval has problems
+    				console.log(err);
+    			}
+    		);
 
     		// Could be useful for memory leaks
     		return () => {
@@ -2970,7 +4039,7 @@ var app = (function () {
     	const writable_props = ["lat", "lon", "zoom", "mapElements"];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Mapbox> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Mapbox> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -2987,20 +4056,24 @@ var app = (function () {
     		if ("lon" in $$props) $$invalidate(3, lon = $$props.lon);
     		if ("zoom" in $$props) $$invalidate(4, zoom = $$props.zoom);
     		if ("mapElements" in $$props) $$invalidate(5, mapElements = $$props.mapElements);
-    		if ("$$scope" in $$props) $$invalidate(8, $$scope = $$props.$$scope);
+    		if ("$$scope" in $$props) $$invalidate(10, $$scope = $$props.$$scope);
     	};
 
     	$$self.$capture_state = () => ({
     		onMount,
+    		createEventDispatcher,
     		mapboxgl: mapboxGl,
     		push,
+    		distance,
     		lat,
     		lon,
     		zoom,
     		mapElements,
+    		dispatch,
     		container,
     		map,
-    		markers
+    		markers,
+    		coords
     	});
 
     	$$self.$inject_state = $$props => {
@@ -3011,6 +4084,7 @@ var app = (function () {
     		if ("container" in $$props) $$invalidate(0, container = $$props.container);
     		if ("map" in $$props) $$invalidate(1, map = $$props.map);
     		if ("markers" in $$props) markers = $$props.markers;
+    		if ("coords" in $$props) coords = $$props.coords;
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -3026,6 +4100,8 @@ var app = (function () {
     		mapElements,
     		mapboxGl,
     		markers,
+    		coords,
+    		dispatch,
     		$$scope,
     		$$slots,
     		div_binding
@@ -3048,19 +4124,19 @@ var app = (function () {
     		const props = options.props || {};
 
     		if (/*lat*/ ctx[2] === undefined && !("lat" in props)) {
-    			console.warn("<Mapbox> was created without expected prop 'lat'");
+    			console_1$1.warn("<Mapbox> was created without expected prop 'lat'");
     		}
 
     		if (/*lon*/ ctx[3] === undefined && !("lon" in props)) {
-    			console.warn("<Mapbox> was created without expected prop 'lon'");
+    			console_1$1.warn("<Mapbox> was created without expected prop 'lon'");
     		}
 
     		if (/*zoom*/ ctx[4] === undefined && !("zoom" in props)) {
-    			console.warn("<Mapbox> was created without expected prop 'zoom'");
+    			console_1$1.warn("<Mapbox> was created without expected prop 'zoom'");
     		}
 
     		if (/*mapElements*/ ctx[5] === undefined && !("mapElements" in props)) {
-    			console.warn("<Mapbox> was created without expected prop 'mapElements'");
+    			console_1$1.warn("<Mapbox> was created without expected prop 'mapElements'");
     		}
     	}
 
@@ -8615,10 +9691,10 @@ var app = (function () {
 
     /* src/routes/Map.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$1 } = globals;
+    const { console: console_1$2 } = globals;
     const file$a = "src/routes/Map.svelte";
 
-    // (85:1) {:catch}
+    // (91:1) {:catch}
     function create_catch_block_1(ctx) {
     	let p;
 
@@ -8626,7 +9702,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 85, 2, 2188);
+    			add_location(p, file$a, 91, 2, 2417);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -8643,22 +9719,24 @@ var app = (function () {
     		block,
     		id: create_catch_block_1.name,
     		type: "catch",
-    		source: "(85:1) {:catch}",
+    		source: "(91:1) {:catch}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (74:1) {:then _}
+    // (75:1) {:then _}
     function create_then_block_1(ctx) {
     	let updating_mapElements;
-    	let t;
+    	let t0;
     	let updating_value;
+    	let t1;
+    	let updating_value_1;
     	let current;
 
     	function mapbox_mapElements_binding(value) {
-    		/*mapbox_mapElements_binding*/ ctx[11].call(null, value);
+    		/*mapbox_mapElements_binding*/ ctx[12].call(null, value);
     	}
 
     	let mapbox_props = { lat: 45.4642, lon: 9.1896, zoom: 8.5 };
@@ -8669,39 +9747,60 @@ var app = (function () {
 
     	const mapbox = new Mapbox({ props: mapbox_props, $$inline: true });
     	binding_callbacks.push(() => bind(mapbox, "mapElements", mapbox_mapElements_binding));
+    	mapbox.$on("mapElementTooFar", /*mapElementTooFar_handler*/ ctx[13]);
 
-    	function snackbar_value_binding(value) {
-    		/*snackbar_value_binding*/ ctx[12].call(null, value);
+    	function snackbar0_value_binding(value) {
+    		/*snackbar0_value_binding*/ ctx[14].call(null, value);
     	}
 
-    	let snackbar_props = {
-    		$$slots: { default: [create_default_slot_2$1] },
+    	let snackbar0_props = {
+    		$$slots: { default: [create_default_slot_3] },
     		$$scope: { ctx }
     	};
 
     	if (/*showSnackbar*/ ctx[3] !== void 0) {
-    		snackbar_props.value = /*showSnackbar*/ ctx[3];
+    		snackbar0_props.value = /*showSnackbar*/ ctx[3];
     	}
 
-    	const snackbar = new Snackbar({ props: snackbar_props, $$inline: true });
-    	binding_callbacks.push(() => bind(snackbar, "value", snackbar_value_binding));
+    	const snackbar0 = new Snackbar({ props: snackbar0_props, $$inline: true });
+    	binding_callbacks.push(() => bind(snackbar0, "value", snackbar0_value_binding));
+
+    	function snackbar1_value_binding(value) {
+    		/*snackbar1_value_binding*/ ctx[15].call(null, value);
+    	}
+
+    	let snackbar1_props = {
+    		$$slots: { default: [create_default_slot_2$1] },
+    		$$scope: { ctx }
+    	};
+
+    	if (/*showMapElementTooFarSnackbar*/ ctx[4] !== void 0) {
+    		snackbar1_props.value = /*showMapElementTooFarSnackbar*/ ctx[4];
+    	}
+
+    	const snackbar1 = new Snackbar({ props: snackbar1_props, $$inline: true });
+    	binding_callbacks.push(() => bind(snackbar1, "value", snackbar1_value_binding));
 
     	const block = {
     		c: function create() {
     			create_component(mapbox.$$.fragment);
-    			t = space();
-    			create_component(snackbar.$$.fragment);
+    			t0 = space();
+    			create_component(snackbar0.$$.fragment);
+    			t1 = space();
+    			create_component(snackbar1.$$.fragment);
     		},
     		m: function mount(target, anchor) {
     			mount_component(mapbox, target, anchor);
-    			insert_dev(target, t, anchor);
-    			mount_component(snackbar, target, anchor);
+    			insert_dev(target, t0, anchor);
+    			mount_component(snackbar0, target, anchor);
+    			insert_dev(target, t1, anchor);
+    			mount_component(snackbar1, target, anchor);
     			current = true;
     		},
     		p: function update(ctx, dirty) {
     			const mapbox_changes = {};
 
-    			if (dirty & /*$$scope*/ 65536) {
+    			if (dirty & /*$$scope*/ 524288) {
     				mapbox_changes.$$scope = { dirty, ctx };
     			}
 
@@ -8712,35 +9811,52 @@ var app = (function () {
     			}
 
     			mapbox.$set(mapbox_changes);
-    			const snackbar_changes = {};
+    			const snackbar0_changes = {};
 
-    			if (dirty & /*$$scope, queryString, snackbarTitle*/ 65572) {
-    				snackbar_changes.$$scope = { dirty, ctx };
+    			if (dirty & /*$$scope, queryString, snackbarTitle*/ 524356) {
+    				snackbar0_changes.$$scope = { dirty, ctx };
     			}
 
     			if (!updating_value && dirty & /*showSnackbar*/ 8) {
     				updating_value = true;
-    				snackbar_changes.value = /*showSnackbar*/ ctx[3];
+    				snackbar0_changes.value = /*showSnackbar*/ ctx[3];
     				add_flush_callback(() => updating_value = false);
     			}
 
-    			snackbar.$set(snackbar_changes);
+    			snackbar0.$set(snackbar0_changes);
+    			const snackbar1_changes = {};
+
+    			if (dirty & /*$$scope*/ 524288) {
+    				snackbar1_changes.$$scope = { dirty, ctx };
+    			}
+
+    			if (!updating_value_1 && dirty & /*showMapElementTooFarSnackbar*/ 16) {
+    				updating_value_1 = true;
+    				snackbar1_changes.value = /*showMapElementTooFarSnackbar*/ ctx[4];
+    				add_flush_callback(() => updating_value_1 = false);
+    			}
+
+    			snackbar1.$set(snackbar1_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
     			transition_in(mapbox.$$.fragment, local);
-    			transition_in(snackbar.$$.fragment, local);
+    			transition_in(snackbar0.$$.fragment, local);
+    			transition_in(snackbar1.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(mapbox.$$.fragment, local);
-    			transition_out(snackbar.$$.fragment, local);
+    			transition_out(snackbar0.$$.fragment, local);
+    			transition_out(snackbar1.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
     			destroy_component(mapbox, detaching);
-    			if (detaching) detach_dev(t);
-    			destroy_component(snackbar, detaching);
+    			if (detaching) detach_dev(t0);
+    			destroy_component(snackbar0, detaching);
+    			if (detaching) detach_dev(t1);
+    			destroy_component(snackbar1, detaching);
     		}
     	};
 
@@ -8748,22 +9864,22 @@ var app = (function () {
     		block,
     		id: create_then_block_1.name,
     		type: "then",
-    		source: "(74:1) {:then _}",
+    		source: "(75:1) {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (82:2) <Snackbar bind:value={showSnackbar}>
-    function create_default_slot_2$1(ctx) {
+    // (84:2) <Snackbar bind:value={showSnackbar}>
+    function create_default_slot_3(ctx) {
     	let div;
     	let t0;
     	let t1;
-    	let t2_value = /*queryString*/ ctx[5].xp + "";
+    	let t2_value = /*queryString*/ ctx[6].xp + "";
     	let t2;
     	let t3;
-    	let t4_value = /*queryString*/ ctx[5].lp + "";
+    	let t4_value = /*queryString*/ ctx[6].lp + "";
     	let t4;
 
     	const block = {
@@ -8774,7 +9890,7 @@ var app = (function () {
     			t2 = text(t2_value);
     			t3 = text(" LP:");
     			t4 = text(t4_value);
-    			add_location(div, file$a, 82, 3, 2093);
+    			add_location(div, file$a, 84, 3, 2205);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -8786,8 +9902,37 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*snackbarTitle*/ 4) set_data_dev(t0, /*snackbarTitle*/ ctx[2]);
-    			if (dirty & /*queryString*/ 32 && t2_value !== (t2_value = /*queryString*/ ctx[5].xp + "")) set_data_dev(t2, t2_value);
-    			if (dirty & /*queryString*/ 32 && t4_value !== (t4_value = /*queryString*/ ctx[5].lp + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*queryString*/ 64 && t2_value !== (t2_value = /*queryString*/ ctx[6].xp + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*queryString*/ 64 && t4_value !== (t4_value = /*queryString*/ ctx[6].lp + "")) set_data_dev(t4, t4_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_default_slot_3.name,
+    		type: "slot",
+    		source: "(84:2) <Snackbar bind:value={showSnackbar}>",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (88:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>
+    function create_default_slot_2$1(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			div.textContent = "Oops, this is out of your range!";
+    			add_location(div, file$a, 88, 3, 2347);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
@@ -8798,14 +9943,14 @@ var app = (function () {
     		block,
     		id: create_default_slot_2$1.name,
     		type: "slot",
-    		source: "(82:2) <Snackbar bind:value={showSnackbar}>",
+    		source: "(88:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (72:22)   <p>Fetching</p>  {:then _}
+    // (73:22)   <p>Fetching</p>  {:then _}
     function create_pending_block_1(ctx) {
     	let p;
 
@@ -8813,7 +9958,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Fetching";
-    			add_location(p, file$a, 72, 1, 1919);
+    			add_location(p, file$a, 73, 1, 1962);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -8830,14 +9975,14 @@ var app = (function () {
     		block,
     		id: create_pending_block_1.name,
     		type: "pending",
-    		source: "(72:22)   <p>Fetching</p>  {:then _}",
+    		source: "(73:22)   <p>Fetching</p>  {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (108:1) {:catch}
+    // (114:1) {:catch}
     function create_catch_block(ctx) {
     	let p;
 
@@ -8845,7 +9990,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 108, 2, 2693);
+    			add_location(p, file$a, 114, 2, 2922);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -8862,14 +10007,14 @@ var app = (function () {
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(108:1) {:catch}",
+    		source: "(114:1) {:catch}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (95:1) {:then _}
+    // (101:1) {:then _}
     function create_then_block(ctx) {
     	let div;
     	let t;
@@ -8904,7 +10049,7 @@ var app = (function () {
     			t = space();
     			create_component(chip1.$$.fragment);
     			attr_dev(div, "class", "flex absolute m-5 inset-x-0 bottom-0 justify-center t");
-    			add_location(div, file$a, 95, 2, 2411);
+    			add_location(div, file$a, 101, 2, 2640);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -8916,14 +10061,14 @@ var app = (function () {
     		p: function update(ctx, dirty) {
     			const chip0_changes = {};
 
-    			if (dirty & /*$$scope, profileData*/ 65538) {
+    			if (dirty & /*$$scope, profileData*/ 524290) {
     				chip0_changes.$$scope = { dirty, ctx };
     			}
 
     			chip0.$set(chip0_changes);
     			const chip1_changes = {};
 
-    			if (dirty & /*$$scope, profileData*/ 65538) {
+    			if (dirty & /*$$scope, profileData*/ 524290) {
     				chip1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -8951,14 +10096,14 @@ var app = (function () {
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(95:1) {:then _}",
+    		source: "(101:1) {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (97:3) <Chip     icon="favorite"     outlined     selectable={false}     >
+    // (103:3) <Chip     icon="favorite"     outlined     selectable={false}     >
     function create_default_slot_1$3(ctx) {
     	let t0;
     	let t1_value = /*profileData*/ ctx[1].lp + "";
@@ -8986,14 +10131,14 @@ var app = (function () {
     		block,
     		id: create_default_slot_1$3.name,
     		type: "slot",
-    		source: "(97:3) <Chip     icon=\\\"favorite\\\"     outlined     selectable={false}     >",
+    		source: "(103:3) <Chip     icon=\\\"favorite\\\"     outlined     selectable={false}     >",
     		ctx
     	});
 
     	return block;
     }
 
-    // (102:3) <Chip     icon="stars"     outlined     selectable={false}     >
+    // (108:3) <Chip     icon="stars"     outlined     selectable={false}     >
     function create_default_slot$4(ctx) {
     	let t0;
     	let t1_value = /*profileData*/ ctx[1].xp + "";
@@ -9021,14 +10166,14 @@ var app = (function () {
     		block,
     		id: create_default_slot$4.name,
     		type: "slot",
-    		source: "(102:3) <Chip     icon=\\\"stars\\\"     outlined     selectable={false}     >",
+    		source: "(108:3) <Chip     icon=\\\"stars\\\"     outlined     selectable={false}     >",
     		ctx
     	});
 
     	return block;
     }
 
-    // (93:26)   <p>Awaiting...</p>  {:then _}
+    // (99:26)   <p>Awaiting...</p>  {:then _}
     function create_pending_block(ctx) {
     	let p;
 
@@ -9036,7 +10181,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Awaiting...";
-    			add_location(p, file$a, 93, 1, 2379);
+    			add_location(p, file$a, 99, 1, 2608);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -9053,7 +10198,7 @@ var app = (function () {
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(93:26)   <p>Awaiting...</p>  {:then _}",
+    		source: "(99:26)   <p>Awaiting...</p>  {:then _}",
     		ctx
     	});
 
@@ -9077,18 +10222,18 @@ var app = (function () {
     		pending: create_pending_block_1,
     		then: create_then_block_1,
     		catch: create_catch_block_1,
-    		value: 15,
+    		value: 18,
     		blocks: [,,,]
     	};
 
-    	handle_promise(promise = /*getMapPromise*/ ctx[4], info);
+    	handle_promise(promise = /*getMapPromise*/ ctx[5], info);
 
     	const button0 = new Button({
     			props: { color: "primary", icon: "account_circle" },
     			$$inline: true
     		});
 
-    	button0.$on("click", /*click_handler*/ ctx[13]);
+    	button0.$on("click", /*click_handler*/ ctx[16]);
 
     	let info_1 = {
     		ctx,
@@ -9097,18 +10242,18 @@ var app = (function () {
     		pending: create_pending_block,
     		then: create_then_block,
     		catch: create_catch_block,
-    		value: 15,
+    		value: 18,
     		blocks: [,,,]
     	};
 
-    	handle_promise(promise_1 = /*getProfilePromise*/ ctx[6], info_1);
+    	handle_promise(promise_1 = /*getProfilePromise*/ ctx[7], info_1);
 
     	const button1 = new Button({
     			props: { color: "primary", icon: "view_list" },
     			$$inline: true
     		});
 
-    	button1.$on("click", /*click_handler_1*/ ctx[14]);
+    	button1.$on("click", /*click_handler_1*/ ctx[17]);
 
     	const block = {
     		c: function create() {
@@ -9122,9 +10267,9 @@ var app = (function () {
     			div1 = element("div");
     			create_component(button1.$$.fragment);
     			attr_dev(div0, "class", "absolute m-3 left-0 bottom-0 z-10");
-    			add_location(div0, file$a, 88, 0, 2211);
+    			add_location(div0, file$a, 94, 0, 2440);
     			attr_dev(div1, "class", "absolute m-3 right-0 bottom-0");
-    			add_location(div1, file$a, 111, 0, 2716);
+    			add_location(div1, file$a, 117, 0, 2945);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -9149,15 +10294,15 @@ var app = (function () {
     			ctx = new_ctx;
     			info.ctx = ctx;
 
-    			if (dirty & /*getMapPromise*/ 16 && promise !== (promise = /*getMapPromise*/ ctx[4]) && handle_promise(promise, info)) ; else {
+    			if (dirty & /*getMapPromise*/ 32 && promise !== (promise = /*getMapPromise*/ ctx[5]) && handle_promise(promise, info)) ; else {
     				const child_ctx = ctx.slice();
-    				child_ctx[15] = info.resolved;
+    				child_ctx[18] = info.resolved;
     				info.block.p(child_ctx, dirty);
     			}
 
     			{
     				const child_ctx = ctx.slice();
-    				child_ctx[15] = info_1.resolved;
+    				child_ctx[18] = info_1.resolved;
     				info_1.block.p(child_ctx, dirty);
     			}
     		},
@@ -9216,12 +10361,13 @@ var app = (function () {
     function instance$b($$self, $$props, $$invalidate) {
     	let $querystring;
     	validate_store(querystring, "querystring");
-    	component_subscribe($$self, querystring, $$value => $$invalidate(8, $querystring = $$value));
+    	component_subscribe($$self, querystring, $$value => $$invalidate(9, $querystring = $$value));
     	let apiKey;
     	let mapElements;
     	let profileData;
     	let snackbarTitle = "";
     	let showSnackbar = false;
+    	let showMapElementTooFarSnackbar = false;
 
     	// TODO: set this in the store. Refactor this.
     	const getProfilePromise = getProfile("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK");
@@ -9237,10 +10383,10 @@ var app = (function () {
     	onMount(() => {
     		getMapFromApi();
 
-    		// Refresh the map every 10 seconds
-    		setInterval(getMapFromApi, 10000);
+    		// Refresh the map every 60 seconds
+    		setInterval(getMapFromApi, 60000);
 
-    		$$invalidate(5, queryString = lib.parse($querystring));
+    		$$invalidate(6, queryString = lib.parse($querystring));
     		console.log(queryString);
 
     		if (queryString.type === "CA") {
@@ -9256,7 +10402,7 @@ var app = (function () {
     	});
 
     	function getMapFromApi() {
-    		$$invalidate(4, getMapPromise = getMap("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK"));
+    		$$invalidate(5, getMapPromise = getMap("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK"));
 
     		getMapPromise.then(res => {
     			$$invalidate(0, mapElements = res.mapobjects);
@@ -9271,7 +10417,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Map> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Map> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -9282,9 +10428,18 @@ var app = (function () {
     		$$invalidate(0, mapElements);
     	}
 
-    	function snackbar_value_binding(value) {
+    	const mapElementTooFar_handler = () => {
+    		$$invalidate(4, showMapElementTooFarSnackbar = true);
+    	};
+
+    	function snackbar0_value_binding(value) {
     		showSnackbar = value;
     		$$invalidate(3, showSnackbar);
+    	}
+
+    	function snackbar1_value_binding(value) {
+    		showMapElementTooFarSnackbar = value;
+    		$$invalidate(4, showMapElementTooFarSnackbar);
     	}
 
     	const click_handler = () => push("/profile");
@@ -9314,6 +10469,7 @@ var app = (function () {
     		profileData,
     		snackbarTitle,
     		showSnackbar,
+    		showMapElementTooFarSnackbar,
     		getProfilePromise,
     		getMapPromise,
     		queryString,
@@ -9328,8 +10484,9 @@ var app = (function () {
     		if ("profileData" in $$props) $$invalidate(1, profileData = $$props.profileData);
     		if ("snackbarTitle" in $$props) $$invalidate(2, snackbarTitle = $$props.snackbarTitle);
     		if ("showSnackbar" in $$props) $$invalidate(3, showSnackbar = $$props.showSnackbar);
-    		if ("getMapPromise" in $$props) $$invalidate(4, getMapPromise = $$props.getMapPromise);
-    		if ("queryString" in $$props) $$invalidate(5, queryString = $$props.queryString);
+    		if ("showMapElementTooFarSnackbar" in $$props) $$invalidate(4, showMapElementTooFarSnackbar = $$props.showMapElementTooFarSnackbar);
+    		if ("getMapPromise" in $$props) $$invalidate(5, getMapPromise = $$props.getMapPromise);
+    		if ("queryString" in $$props) $$invalidate(6, queryString = $$props.queryString);
     	};
 
     	if ($$props && "$$inject" in $$props) {
@@ -9341,6 +10498,7 @@ var app = (function () {
     		profileData,
     		snackbarTitle,
     		showSnackbar,
+    		showMapElementTooFarSnackbar,
     		getMapPromise,
     		queryString,
     		getProfilePromise,
@@ -9349,7 +10507,9 @@ var app = (function () {
     		getMapFromApi,
     		unsubscribe,
     		mapbox_mapElements_binding,
-    		snackbar_value_binding,
+    		mapElementTooFar_handler,
+    		snackbar0_value_binding,
+    		snackbar1_value_binding,
     		click_handler,
     		click_handler_1
     	];
@@ -10658,7 +11818,7 @@ var app = (function () {
 
     /* src/routes/EditProfile.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$2 } = globals;
+    const { console: console_1$3 } = globals;
     const file$e = "src/routes/EditProfile.svelte";
 
     // (71:8) <Button on:click={changeProfilePic}>
@@ -10908,7 +12068,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<EditProfile> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<EditProfile> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -12462,7 +13622,7 @@ var app = (function () {
 
     /* src/routes/Ranking.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$3 } = globals;
+    const { console: console_1$4 } = globals;
     const file$h = "src/routes/Ranking.svelte";
 
     // (47:8) {:catch}
@@ -12680,7 +13840,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<Ranking> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<Ranking> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -12726,7 +13886,7 @@ var app = (function () {
 
     /* src/routes/FightEat.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$4 } = globals;
+    const { console: console_1$5 } = globals;
     const file$i = "src/routes/FightEat.svelte";
 
     // (68:4) {:catch}
@@ -13127,7 +14287,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<FightEat> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<FightEat> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;

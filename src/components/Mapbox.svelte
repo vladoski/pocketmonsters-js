@@ -1,16 +1,20 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import mapboxgl from 'mapbox-gl';
 	import { push } from 'svelte-spa-router';
+	import distance from '@turf/distance';
 
 	export let lat;
 	export let lon;
 	export let zoom;
 	export let mapElements;
 
+	const dispatch = createEventDispatcher();
+
 	let container;
 	let map;
 	let markers = [];
+	let coords = [];
 
 	onMount(async () => {
 
@@ -30,6 +34,16 @@
 			showCompass: true,
 			showZoom: false
 		}));
+
+		// Add location marker on the map
+		map.addControl(
+			new mapboxgl.GeolocateControl({
+				positionOptions: {
+					enableHighAccuracy: true
+				},
+				trackUserLocation: true
+			})
+		);
 
 		const geolocate = new mapboxgl.GeolocateControl({
 			positionOptions: {
@@ -80,7 +94,13 @@
 
 					// Goes to the fighteat passing the element id in the querystring
 					icon.addEventListener('click', () => {
-						push(`/fighteat?id=${icon.id}`);
+
+						// If the distance between the mapelement and the player is greater than half a km then fighteat else display error message
+						if (coords.length == 2 && distance([element.lat, element.lon], coords) == 0.5) {
+							push(`/fighteat?id=${icon.id}`);
+						} else {
+							dispatch('mapElementTooFar');
+						}
 					});
 
 					let newMarker = new mapboxgl.Marker(icon)
@@ -90,6 +110,16 @@
 					markers = [newMarker, ...markers];
 				});
 			}
+		});
+
+		navigator.geolocation.getCurrentPosition(position => {
+			console.log(position.coords);
+
+			coords = [position.coords.latitude, position.coords.longitude];
+		},
+		err => {
+			// TODO: handler errors if the location retrieval has problems
+			console.log(err);
 		});
 
 		// Could be useful for memory leaks
