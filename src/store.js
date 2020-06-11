@@ -4,6 +4,6 @@ export const apiKeyStore = writable('v6LxCAWaIJGHoLxK');
 
 export const apiUrlStore = writable('https://ewserver.di.unimi.it/mobicomp/mostri');
 
-export const mapElementsStore = writable(0);
+export const mapElementsStore = writable([]);
 
 export const profileDataStore = writable(0);

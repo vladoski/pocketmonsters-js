@@ -2678,7 +2678,7 @@ var app = (function () {
 
     const apiUrlStore = writable('https://ewserver.di.unimi.it/mobicomp/mostri');
 
-    const mapElementsStore = writable(0);
+    const mapElementsStore = writable([]);
 
     const profileDataStore = writable(0);
 
@@ -3788,11 +3788,11 @@ var app = (function () {
     const { console: console_1$1, document: document_1 } = globals;
     const file = "src/components/Mapbox.svelte";
 
-    // (147:1) {#if map}
+    // (167:1) {#if map}
     function create_if_block$1(ctx) {
     	let current;
-    	const default_slot_template = /*$$slots*/ ctx[11].default;
-    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[10], null);
+    	const default_slot_template = /*$$slots*/ ctx[14].default;
+    	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[13], null);
 
     	const block = {
     		c: function create() {
@@ -3807,8 +3807,8 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (default_slot) {
-    				if (default_slot.p && dirty & /*$$scope*/ 1024) {
-    					default_slot.p(get_slot_context(default_slot_template, ctx, /*$$scope*/ ctx[10], null), get_slot_changes(default_slot_template, /*$$scope*/ ctx[10], dirty, null));
+    				if (default_slot.p && dirty & /*$$scope*/ 8192) {
+    					default_slot.p(get_slot_context(default_slot_template, ctx, /*$$scope*/ ctx[13], null), get_slot_changes(default_slot_template, /*$$scope*/ ctx[13], dirty, null));
     				}
     			}
     		},
@@ -3830,7 +3830,7 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(147:1) {#if map}",
+    		source: "(167:1) {#if map}",
     		ctx
     	});
 
@@ -3852,10 +3852,10 @@ var app = (function () {
     			if (if_block) if_block.c();
     			attr_dev(link, "rel", "stylesheet");
     			attr_dev(link, "href", "mapbox-gl.css");
-    			add_location(link, file, 142, 1, 3592);
+    			add_location(link, file, 162, 1, 4338);
     			attr_dev(div, "id", "mapbox");
     			attr_dev(div, "class", "svelte-1w4l22h");
-    			add_location(div, file, 145, 0, 3653);
+    			add_location(div, file, 165, 0, 4399);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3865,7 +3865,7 @@ var app = (function () {
     			insert_dev(target, t, anchor);
     			insert_dev(target, div, anchor);
     			if (if_block) if_block.m(div, null);
-    			/*div_binding*/ ctx[12](div);
+    			/*div_binding*/ ctx[15](div);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
@@ -3906,7 +3906,7 @@ var app = (function () {
     			if (detaching) detach_dev(t);
     			if (detaching) detach_dev(div);
     			if (if_block) if_block.d();
-    			/*div_binding*/ ctx[12](null);
+    			/*div_binding*/ ctx[15](null);
     		}
     	};
 
@@ -3929,8 +3929,19 @@ var app = (function () {
     	const dispatch = createEventDispatcher();
     	let container;
     	let map;
+    	let isMapLoaded = false; // TODO: refactor this pattern
     	let markers = [];
     	let coords = [];
+
+    	// Subscribe to the mapElementsStore that contains all the latest mapElements fetched from the API
+    	const unsubscribe = mapElementsStore.subscribe(el => {
+    		$$invalidate(2, mapElements = el);
+
+    		// TODO: refactor this pattern
+    		if (isMapLoaded) {
+    			refreshMap();
+    		}
+    	});
 
     	onMount(async () => {
     		// Default Mapbox API key from the docs
@@ -3964,64 +3975,12 @@ var app = (function () {
     		map.on("load", function () {
     			map.addControl(new mapboxGl.AttributionControl(), "top-right");
     			geolocate.trigger();
-
-    			if (mapElements !== undefined) {
-    				mapElements.forEach(element => {
-    					let icon = document.createElement("div");
-    					icon.className = "marker";
-    					icon.id = element.id;
-    					icon.style.width = "3rem";
-    					icon.style.height = "3rem";
-    					icon.style.backgroundSize = "contain";
-
-    					// TODO: refactor this
-    					if (element.type == "CA") {
-    						if (element.size == "M") {
-    							icon.style.backgroundImage = "url(img/candy_m.png)";
-    						}
-
-    						if (element.size == "L") {
-    							icon.style.backgroundImage = "url(img/candy_l.png)";
-    						}
-
-    						if (element.size == "S") {
-    							icon.style.backgroundImage = "url(img/candy_s.png)";
-    						}
-    					}
-
-    					if (element.type == "MO") {
-    						if (element.size == "M") {
-    							icon.style.backgroundImage = "url(img/monster_m.png)";
-    						}
-
-    						if (element.size == "L") {
-    							icon.style.backgroundImage = "url(img/monster_l.png)";
-    						}
-
-    						if (element.size == "S") {
-    							icon.style.backgroundImage = "url(img/monster_s.png)";
-    						}
-    					}
-
-    					// Goes to the fighteat passing the element id in the querystring
-    					icon.addEventListener("click", () => {
-    						// If the distance between the mapelement and the player is greater than half a km then fighteat else display error message
-    						if (coords.length == 2 && distance([element.lat, element.lon], coords) == 0.5) {
-    							push(`/fighteat?id=${icon.id}`);
-    						} else {
-    							dispatch("mapElementTooFar");
-    						}
-    					});
-
-    					let newMarker = new mapboxGl.Marker(icon).setLngLat([parseFloat(element.lon), parseFloat(element.lat)]).addTo(map);
-    					markers = [newMarker, ...markers];
-    				});
-    			}
+    			refreshMap();
+    			isMapLoaded = true; // TODO: refactor this pattern
     		});
 
     		navigator.geolocation.getCurrentPosition(
     			position => {
-    				console.log(position.coords);
     				coords = [position.coords.latitude, position.coords.longitude];
     			},
     			err => {
@@ -4035,6 +3994,66 @@ var app = (function () {
     			map.remove();
     		};
     	});
+
+    	function refreshMap() {
+    		if (mapElements !== undefined && Array.isArray(mapElements)) {
+    			// Delete all current elements
+    			// TODO: check this because the API doesn't refresh the elements after being eaten/fought
+    			markers.forEach(element => element.remove());
+
+    			markers = [];
+
+    			mapElements.forEach(element => {
+    				let icon = document.createElement("div");
+    				icon.className = "marker";
+    				icon.id = element.id;
+    				icon.style.width = "3rem";
+    				icon.style.height = "3rem";
+    				icon.style.backgroundSize = "contain";
+
+    				// TODO: refactor this
+    				if (element.type == "CA") {
+    					if (element.size == "M") {
+    						icon.style.backgroundImage = "url(img/candy_m.png)";
+    					}
+
+    					if (element.size == "L") {
+    						icon.style.backgroundImage = "url(img/candy_l.png)";
+    					}
+
+    					if (element.size == "S") {
+    						icon.style.backgroundImage = "url(img/candy_s.png)";
+    					}
+    				}
+
+    				if (element.type == "MO") {
+    					if (element.size == "M") {
+    						icon.style.backgroundImage = "url(img/monster_m.png)";
+    					}
+
+    					if (element.size == "L") {
+    						icon.style.backgroundImage = "url(img/monster_l.png)";
+    					}
+
+    					if (element.size == "S") {
+    						icon.style.backgroundImage = "url(img/monster_s.png)";
+    					}
+    				}
+
+    				// Goes to the fighteat passing the element id in the querystring
+    				icon.addEventListener("click", () => {
+    					// If the distance between the mapelement and the player is greater than half a km then fighteat else display error message
+    					// TODO: delete the true eval. if needed
+    					{
+    						push(`/fighteat?id=${icon.id}`);
+    					}
+    				});
+
+    				let newMarker = new mapboxGl.Marker(icon).setLngLat([parseFloat(element.lon), parseFloat(element.lat)]).addTo(map);
+    				markers = [newMarker, ...markers];
+    			});
+    		}
+    	}
 
     	const writable_props = ["lat", "lon", "zoom", "mapElements"];
 
@@ -4052,11 +4071,11 @@ var app = (function () {
     	}
 
     	$$self.$set = $$props => {
-    		if ("lat" in $$props) $$invalidate(2, lat = $$props.lat);
-    		if ("lon" in $$props) $$invalidate(3, lon = $$props.lon);
-    		if ("zoom" in $$props) $$invalidate(4, zoom = $$props.zoom);
-    		if ("mapElements" in $$props) $$invalidate(5, mapElements = $$props.mapElements);
-    		if ("$$scope" in $$props) $$invalidate(10, $$scope = $$props.$$scope);
+    		if ("lat" in $$props) $$invalidate(3, lat = $$props.lat);
+    		if ("lon" in $$props) $$invalidate(4, lon = $$props.lon);
+    		if ("zoom" in $$props) $$invalidate(5, zoom = $$props.zoom);
+    		if ("mapElements" in $$props) $$invalidate(2, mapElements = $$props.mapElements);
+    		if ("$$scope" in $$props) $$invalidate(13, $$scope = $$props.$$scope);
     	};
 
     	$$self.$capture_state = () => ({
@@ -4065,6 +4084,9 @@ var app = (function () {
     		mapboxgl: mapboxGl,
     		push,
     		distance,
+    		apiKeyStore,
+    		apiUrlStore,
+    		mapElementsStore,
     		lat,
     		lon,
     		zoom,
@@ -4072,17 +4094,21 @@ var app = (function () {
     		dispatch,
     		container,
     		map,
+    		isMapLoaded,
     		markers,
-    		coords
+    		coords,
+    		unsubscribe,
+    		refreshMap
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("lat" in $$props) $$invalidate(2, lat = $$props.lat);
-    		if ("lon" in $$props) $$invalidate(3, lon = $$props.lon);
-    		if ("zoom" in $$props) $$invalidate(4, zoom = $$props.zoom);
-    		if ("mapElements" in $$props) $$invalidate(5, mapElements = $$props.mapElements);
+    		if ("lat" in $$props) $$invalidate(3, lat = $$props.lat);
+    		if ("lon" in $$props) $$invalidate(4, lon = $$props.lon);
+    		if ("zoom" in $$props) $$invalidate(5, zoom = $$props.zoom);
+    		if ("mapElements" in $$props) $$invalidate(2, mapElements = $$props.mapElements);
     		if ("container" in $$props) $$invalidate(0, container = $$props.container);
     		if ("map" in $$props) $$invalidate(1, map = $$props.map);
+    		if ("isMapLoaded" in $$props) isMapLoaded = $$props.isMapLoaded;
     		if ("markers" in $$props) markers = $$props.markers;
     		if ("coords" in $$props) coords = $$props.coords;
     	};
@@ -4094,14 +4120,17 @@ var app = (function () {
     	return [
     		container,
     		map,
+    		mapElements,
     		lat,
     		lon,
     		zoom,
-    		mapElements,
     		mapboxGl,
+    		isMapLoaded,
     		markers,
     		coords,
     		dispatch,
+    		unsubscribe,
+    		refreshMap,
     		$$scope,
     		$$slots,
     		div_binding
@@ -4111,7 +4140,7 @@ var app = (function () {
     class Mapbox extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { lat: 2, lon: 3, zoom: 4, mapElements: 5 });
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { lat: 3, lon: 4, zoom: 5, mapElements: 2 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -4123,19 +4152,19 @@ var app = (function () {
     		const { ctx } = this.$$;
     		const props = options.props || {};
 
-    		if (/*lat*/ ctx[2] === undefined && !("lat" in props)) {
+    		if (/*lat*/ ctx[3] === undefined && !("lat" in props)) {
     			console_1$1.warn("<Mapbox> was created without expected prop 'lat'");
     		}
 
-    		if (/*lon*/ ctx[3] === undefined && !("lon" in props)) {
+    		if (/*lon*/ ctx[4] === undefined && !("lon" in props)) {
     			console_1$1.warn("<Mapbox> was created without expected prop 'lon'");
     		}
 
-    		if (/*zoom*/ ctx[4] === undefined && !("zoom" in props)) {
+    		if (/*zoom*/ ctx[5] === undefined && !("zoom" in props)) {
     			console_1$1.warn("<Mapbox> was created without expected prop 'zoom'");
     		}
 
-    		if (/*mapElements*/ ctx[5] === undefined && !("mapElements" in props)) {
+    		if (/*mapElements*/ ctx[2] === undefined && !("mapElements" in props)) {
     			console_1$1.warn("<Mapbox> was created without expected prop 'mapElements'");
     		}
     	}
@@ -9690,11 +9719,9 @@ var app = (function () {
     }
 
     /* src/routes/Map.svelte generated by Svelte v3.22.3 */
-
-    const { console: console_1$2 } = globals;
     const file$a = "src/routes/Map.svelte";
 
-    // (91:1) {:catch}
+    // (101:1) {:catch}
     function create_catch_block_1(ctx) {
     	let p;
 
@@ -9702,7 +9729,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 91, 2, 2417);
+    			add_location(p, file$a, 101, 2, 2728);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -9719,14 +9746,14 @@ var app = (function () {
     		block,
     		id: create_catch_block_1.name,
     		type: "catch",
-    		source: "(91:1) {:catch}",
+    		source: "(101:1) {:catch}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (75:1) {:then _}
+    // (85:1) {:then _}
     function create_then_block_1(ctx) {
     	let updating_mapElements;
     	let t0;
@@ -9736,7 +9763,7 @@ var app = (function () {
     	let current;
 
     	function mapbox_mapElements_binding(value) {
-    		/*mapbox_mapElements_binding*/ ctx[12].call(null, value);
+    		/*mapbox_mapElements_binding*/ ctx[13].call(null, value);
     	}
 
     	let mapbox_props = { lat: 45.4642, lon: 9.1896, zoom: 8.5 };
@@ -9747,10 +9774,10 @@ var app = (function () {
 
     	const mapbox = new Mapbox({ props: mapbox_props, $$inline: true });
     	binding_callbacks.push(() => bind(mapbox, "mapElements", mapbox_mapElements_binding));
-    	mapbox.$on("mapElementTooFar", /*mapElementTooFar_handler*/ ctx[13]);
+    	mapbox.$on("mapElementTooFar", /*mapElementTooFar_handler*/ ctx[14]);
 
     	function snackbar0_value_binding(value) {
-    		/*snackbar0_value_binding*/ ctx[14].call(null, value);
+    		/*snackbar0_value_binding*/ ctx[15].call(null, value);
     	}
 
     	let snackbar0_props = {
@@ -9766,7 +9793,7 @@ var app = (function () {
     	binding_callbacks.push(() => bind(snackbar0, "value", snackbar0_value_binding));
 
     	function snackbar1_value_binding(value) {
-    		/*snackbar1_value_binding*/ ctx[15].call(null, value);
+    		/*snackbar1_value_binding*/ ctx[16].call(null, value);
     	}
 
     	let snackbar1_props = {
@@ -9800,7 +9827,7 @@ var app = (function () {
     		p: function update(ctx, dirty) {
     			const mapbox_changes = {};
 
-    			if (dirty & /*$$scope*/ 524288) {
+    			if (dirty & /*$$scope*/ 1048576) {
     				mapbox_changes.$$scope = { dirty, ctx };
     			}
 
@@ -9813,7 +9840,7 @@ var app = (function () {
     			mapbox.$set(mapbox_changes);
     			const snackbar0_changes = {};
 
-    			if (dirty & /*$$scope, queryString, snackbarTitle*/ 524356) {
+    			if (dirty & /*$$scope, queryString, snackbarTitle*/ 1048644) {
     				snackbar0_changes.$$scope = { dirty, ctx };
     			}
 
@@ -9826,7 +9853,7 @@ var app = (function () {
     			snackbar0.$set(snackbar0_changes);
     			const snackbar1_changes = {};
 
-    			if (dirty & /*$$scope*/ 524288) {
+    			if (dirty & /*$$scope*/ 1048576) {
     				snackbar1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -9864,14 +9891,14 @@ var app = (function () {
     		block,
     		id: create_then_block_1.name,
     		type: "then",
-    		source: "(75:1) {:then _}",
+    		source: "(85:1) {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (84:2) <Snackbar bind:value={showSnackbar}>
+    // (94:2) <Snackbar bind:value={showSnackbar}>
     function create_default_slot_3(ctx) {
     	let div;
     	let t0;
@@ -9890,7 +9917,7 @@ var app = (function () {
     			t2 = text(t2_value);
     			t3 = text(" LP:");
     			t4 = text(t4_value);
-    			add_location(div, file$a, 84, 3, 2205);
+    			add_location(div, file$a, 94, 3, 2516);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -9914,14 +9941,14 @@ var app = (function () {
     		block,
     		id: create_default_slot_3.name,
     		type: "slot",
-    		source: "(84:2) <Snackbar bind:value={showSnackbar}>",
+    		source: "(94:2) <Snackbar bind:value={showSnackbar}>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (88:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>
+    // (98:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>
     function create_default_slot_2$1(ctx) {
     	let div;
 
@@ -9929,7 +9956,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			div.textContent = "Oops, this is out of your range!";
-    			add_location(div, file$a, 88, 3, 2347);
+    			add_location(div, file$a, 98, 3, 2658);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -9943,14 +9970,14 @@ var app = (function () {
     		block,
     		id: create_default_slot_2$1.name,
     		type: "slot",
-    		source: "(88:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>",
+    		source: "(98:2) <Snackbar bind:value={showMapElementTooFarSnackbar}>",
     		ctx
     	});
 
     	return block;
     }
 
-    // (73:22)   <p>Fetching</p>  {:then _}
+    // (83:22)   <p>Fetching</p>  {:then _}
     function create_pending_block_1(ctx) {
     	let p;
 
@@ -9958,7 +9985,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Fetching";
-    			add_location(p, file$a, 73, 1, 1962);
+    			add_location(p, file$a, 83, 1, 2273);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -9975,14 +10002,14 @@ var app = (function () {
     		block,
     		id: create_pending_block_1.name,
     		type: "pending",
-    		source: "(73:22)   <p>Fetching</p>  {:then _}",
+    		source: "(83:22)   <p>Fetching</p>  {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (114:1) {:catch}
+    // (124:1) {:catch}
     function create_catch_block(ctx) {
     	let p;
 
@@ -9990,7 +10017,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 114, 2, 2922);
+    			add_location(p, file$a, 124, 2, 3233);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -10007,14 +10034,14 @@ var app = (function () {
     		block,
     		id: create_catch_block.name,
     		type: "catch",
-    		source: "(114:1) {:catch}",
+    		source: "(124:1) {:catch}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (101:1) {:then _}
+    // (111:1) {:then _}
     function create_then_block(ctx) {
     	let div;
     	let t;
@@ -10049,7 +10076,7 @@ var app = (function () {
     			t = space();
     			create_component(chip1.$$.fragment);
     			attr_dev(div, "class", "flex absolute m-5 inset-x-0 bottom-0 justify-center t");
-    			add_location(div, file$a, 101, 2, 2640);
+    			add_location(div, file$a, 111, 2, 2951);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -10061,14 +10088,14 @@ var app = (function () {
     		p: function update(ctx, dirty) {
     			const chip0_changes = {};
 
-    			if (dirty & /*$$scope, profileData*/ 524290) {
+    			if (dirty & /*$$scope, profileData*/ 1048578) {
     				chip0_changes.$$scope = { dirty, ctx };
     			}
 
     			chip0.$set(chip0_changes);
     			const chip1_changes = {};
 
-    			if (dirty & /*$$scope, profileData*/ 524290) {
+    			if (dirty & /*$$scope, profileData*/ 1048578) {
     				chip1_changes.$$scope = { dirty, ctx };
     			}
 
@@ -10096,14 +10123,14 @@ var app = (function () {
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(101:1) {:then _}",
+    		source: "(111:1) {:then _}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (103:3) <Chip     icon="favorite"     outlined     selectable={false}     >
+    // (113:3) <Chip     icon="favorite"     outlined     selectable={false}     >
     function create_default_slot_1$3(ctx) {
     	let t0;
     	let t1_value = /*profileData*/ ctx[1].lp + "";
@@ -10131,14 +10158,14 @@ var app = (function () {
     		block,
     		id: create_default_slot_1$3.name,
     		type: "slot",
-    		source: "(103:3) <Chip     icon=\\\"favorite\\\"     outlined     selectable={false}     >",
+    		source: "(113:3) <Chip     icon=\\\"favorite\\\"     outlined     selectable={false}     >",
     		ctx
     	});
 
     	return block;
     }
 
-    // (108:3) <Chip     icon="stars"     outlined     selectable={false}     >
+    // (118:3) <Chip     icon="stars"     outlined     selectable={false}     >
     function create_default_slot$4(ctx) {
     	let t0;
     	let t1_value = /*profileData*/ ctx[1].xp + "";
@@ -10166,14 +10193,14 @@ var app = (function () {
     		block,
     		id: create_default_slot$4.name,
     		type: "slot",
-    		source: "(108:3) <Chip     icon=\\\"stars\\\"     outlined     selectable={false}     >",
+    		source: "(118:3) <Chip     icon=\\\"stars\\\"     outlined     selectable={false}     >",
     		ctx
     	});
 
     	return block;
     }
 
-    // (99:26)   <p>Awaiting...</p>  {:then _}
+    // (109:26)   <p>Awaiting...</p>  {:then _}
     function create_pending_block(ctx) {
     	let p;
 
@@ -10181,7 +10208,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Awaiting...";
-    			add_location(p, file$a, 99, 1, 2608);
+    			add_location(p, file$a, 109, 1, 2919);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -10198,7 +10225,7 @@ var app = (function () {
     		block,
     		id: create_pending_block.name,
     		type: "pending",
-    		source: "(99:26)   <p>Awaiting...</p>  {:then _}",
+    		source: "(109:26)   <p>Awaiting...</p>  {:then _}",
     		ctx
     	});
 
@@ -10222,7 +10249,7 @@ var app = (function () {
     		pending: create_pending_block_1,
     		then: create_then_block_1,
     		catch: create_catch_block_1,
-    		value: 18,
+    		value: 19,
     		blocks: [,,,]
     	};
 
@@ -10233,7 +10260,7 @@ var app = (function () {
     			$$inline: true
     		});
 
-    	button0.$on("click", /*click_handler*/ ctx[16]);
+    	button0.$on("click", /*click_handler*/ ctx[17]);
 
     	let info_1 = {
     		ctx,
@@ -10242,7 +10269,7 @@ var app = (function () {
     		pending: create_pending_block,
     		then: create_then_block,
     		catch: create_catch_block,
-    		value: 18,
+    		value: 19,
     		blocks: [,,,]
     	};
 
@@ -10253,7 +10280,7 @@ var app = (function () {
     			$$inline: true
     		});
 
-    	button1.$on("click", /*click_handler_1*/ ctx[17]);
+    	button1.$on("click", /*click_handler_1*/ ctx[18]);
 
     	const block = {
     		c: function create() {
@@ -10267,9 +10294,9 @@ var app = (function () {
     			div1 = element("div");
     			create_component(button1.$$.fragment);
     			attr_dev(div0, "class", "absolute m-3 left-0 bottom-0 z-10");
-    			add_location(div0, file$a, 94, 0, 2440);
+    			add_location(div0, file$a, 104, 0, 2751);
     			attr_dev(div1, "class", "absolute m-3 right-0 bottom-0");
-    			add_location(div1, file$a, 117, 0, 2945);
+    			add_location(div1, file$a, 127, 0, 3256);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -10296,13 +10323,13 @@ var app = (function () {
 
     			if (dirty & /*getMapPromise*/ 32 && promise !== (promise = /*getMapPromise*/ ctx[5]) && handle_promise(promise, info)) ; else {
     				const child_ctx = ctx.slice();
-    				child_ctx[18] = info.resolved;
+    				child_ctx[19] = info.resolved;
     				info.block.p(child_ctx, dirty);
     			}
 
     			{
     				const child_ctx = ctx.slice();
-    				child_ctx[18] = info_1.resolved;
+    				child_ctx[19] = info_1.resolved;
     				info_1.block.p(child_ctx, dirty);
     			}
     		},
@@ -10361,20 +10388,20 @@ var app = (function () {
     function instance$b($$self, $$props, $$invalidate) {
     	let $querystring;
     	validate_store(querystring, "querystring");
-    	component_subscribe($$self, querystring, $$value => $$invalidate(9, $querystring = $$value));
+    	component_subscribe($$self, querystring, $$value => $$invalidate(10, $querystring = $$value));
     	let apiKey;
     	let mapElements;
     	let profileData;
     	let snackbarTitle = "";
     	let showSnackbar = false;
     	let showMapElementTooFarSnackbar = false;
+    	let isFirstTimeFetched = true;
 
     	// TODO: set this in the store. Refactor this.
     	const getProfilePromise = getProfile("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK");
 
     	getProfilePromise.then(json => {
     		$$invalidate(1, profileData = json);
-    		console.log(profileData);
     	});
 
     	let getMapPromise;
@@ -10384,10 +10411,9 @@ var app = (function () {
     		getMapFromApi();
 
     		// Refresh the map every 60 seconds
-    		setInterval(getMapFromApi, 60000);
+    		setInterval(getMapFromApi, 5000);
 
     		$$invalidate(6, queryString = lib.parse($querystring));
-    		console.log(queryString);
 
     		if (queryString.type === "CA") {
     			$$invalidate(2, snackbarTitle = "Gnam! What a delicious candy!");
@@ -10401,13 +10427,22 @@ var app = (function () {
     		}
     	});
 
+    	// TODO: refactor this, find another way to implement this. Garbage code
     	function getMapFromApi() {
-    		$$invalidate(5, getMapPromise = getMap("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK"));
+    		if (isFirstTimeFetched) {
+    			isFirstTimeFetched = false;
+    			$$invalidate(5, getMapPromise = getMap("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK"));
 
-    		getMapPromise.then(res => {
-    			$$invalidate(0, mapElements = res.mapobjects);
-    			mapElementsStore.set(mapElements);
-    		});
+    			getMapPromise.then(res => {
+    				$$invalidate(0, mapElements = res.mapobjects);
+    				mapElementsStore.set(mapElements);
+    			});
+    		} else {
+    			getMap("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK").then(res => {
+    				$$invalidate(0, mapElements = res.mapobjects);
+    				mapElementsStore.set(mapElements);
+    			});
+    		}
     	}
 
     	const unsubscribe = apiKeyStore.subscribe(key => {
@@ -10417,7 +10452,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Map> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Map> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -10470,6 +10505,7 @@ var app = (function () {
     		snackbarTitle,
     		showSnackbar,
     		showMapElementTooFarSnackbar,
+    		isFirstTimeFetched,
     		getProfilePromise,
     		getMapPromise,
     		queryString,
@@ -10485,6 +10521,7 @@ var app = (function () {
     		if ("snackbarTitle" in $$props) $$invalidate(2, snackbarTitle = $$props.snackbarTitle);
     		if ("showSnackbar" in $$props) $$invalidate(3, showSnackbar = $$props.showSnackbar);
     		if ("showMapElementTooFarSnackbar" in $$props) $$invalidate(4, showMapElementTooFarSnackbar = $$props.showMapElementTooFarSnackbar);
+    		if ("isFirstTimeFetched" in $$props) isFirstTimeFetched = $$props.isFirstTimeFetched;
     		if ("getMapPromise" in $$props) $$invalidate(5, getMapPromise = $$props.getMapPromise);
     		if ("queryString" in $$props) $$invalidate(6, queryString = $$props.queryString);
     	};
@@ -10503,6 +10540,7 @@ var app = (function () {
     		queryString,
     		getProfilePromise,
     		apiKey,
+    		isFirstTimeFetched,
     		$querystring,
     		getMapFromApi,
     		unsubscribe,
@@ -11818,7 +11856,7 @@ var app = (function () {
 
     /* src/routes/EditProfile.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$3 } = globals;
+    const { console: console_1$2 } = globals;
     const file$e = "src/routes/EditProfile.svelte";
 
     // (71:8) <Button on:click={changeProfilePic}>
@@ -12068,7 +12106,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<EditProfile> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<EditProfile> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -13622,7 +13660,7 @@ var app = (function () {
 
     /* src/routes/Ranking.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$4 } = globals;
+    const { console: console_1$3 } = globals;
     const file$h = "src/routes/Ranking.svelte";
 
     // (47:8) {:catch}
@@ -13840,7 +13878,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<Ranking> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<Ranking> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -13886,7 +13924,7 @@ var app = (function () {
 
     /* src/routes/FightEat.svelte generated by Svelte v3.22.3 */
 
-    const { console: console_1$5 } = globals;
+    const { console: console_1$4 } = globals;
     const file$i = "src/routes/FightEat.svelte";
 
     // (68:4) {:catch}
@@ -14287,7 +14325,7 @@ var app = (function () {
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<FightEat> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$4.warn(`<FightEat> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;

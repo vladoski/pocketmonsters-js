@@ -4,6 +4,8 @@
 	import { push } from 'svelte-spa-router';
 	import distance from '@turf/distance';
 
+	import { apiKeyStore, apiUrlStore, mapElementsStore } from '../store.js';
+
 	export let lat;
 	export let lon;
 	export let zoom;
@@ -13,8 +15,19 @@
 
 	let container;
 	let map;
+	let isMapLoaded = false; // TODO: refactor this pattern
 	let markers = [];
 	let coords = [];
+
+	// Subscribe to the mapElementsStore that contains all the latest mapElements fetched from the API
+	const unsubscribe = mapElementsStore.subscribe(el => {
+			mapElements = el;
+
+			// TODO: refactor this pattern
+			if (isMapLoaded) {
+				refreshMap();
+			}
+	});
 
 	onMount(async () => {
 
@@ -58,7 +71,30 @@
 			map.addControl(new mapboxgl.AttributionControl(), 'top-right');
 			geolocate.trigger();
 
-			if (mapElements !== undefined) {
+			refreshMap();
+			isMapLoaded = true; // TODO: refactor this pattern
+		});
+
+		navigator.geolocation.getCurrentPosition(position => {
+			coords = [position.coords.latitude, position.coords.longitude];
+		},
+		err => {
+			// TODO: handler errors if the location retrieval has problems
+			console.log(err);
+		});
+
+		// Could be useful for memory leaks
+		return () => {
+			map.remove();
+		};
+	});
+
+	function refreshMap() {
+			if (mapElements !== undefined && Array.isArray(mapElements)) {
+				// Delete all current elements
+				// TODO: check this because the API doesn't refresh the elements after being eaten/fought
+				markers.forEach(element => element.remove());
+				markers = [];
 
 				mapElements.forEach(element => {
 					let icon = document.createElement('div');
@@ -94,9 +130,9 @@
 
 					// Goes to the fighteat passing the element id in the querystring
 					icon.addEventListener('click', () => {
-
 						// If the distance between the mapelement and the player is greater than half a km then fighteat else display error message
-						if (coords.length == 2 && distance([element.lat, element.lon], coords) == 0.5) {
+						// TODO: delete the true eval. if needed
+						if (true || coords.length == 2 && (distance([element.lat, element.lon], coords) == 0.5)) {
 							push(`/fighteat?id=${icon.id}`);
 						} else {
 							dispatch('mapElementTooFar');
@@ -110,23 +146,7 @@
 					markers = [newMarker, ...markers];
 				});
 			}
-		});
-
-		navigator.geolocation.getCurrentPosition(position => {
-			console.log(position.coords);
-
-			coords = [position.coords.latitude, position.coords.longitude];
-		},
-		err => {
-			// TODO: handler errors if the location retrieval has problems
-			console.log(err);
-		});
-
-		// Could be useful for memory leaks
-		return () => {
-			map.remove();
-		};
-	});
+		}
 
 </script>
 

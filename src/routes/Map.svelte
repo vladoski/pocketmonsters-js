@@ -19,11 +19,12 @@
 	let showSnackbar = false;
 	let showMapElementTooFarSnackbar = false;
 
+	let isFirstTimeFetched = true;
+
 	// TODO: set this in the store. Refactor this.
 	const getProfilePromise = getProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
 	getProfilePromise.then(json => {
 		profileData = json;
-		console.log(profileData);
 	});
 
 	let getMapPromise;
@@ -31,11 +32,10 @@
 	onMount(() => {
 		getMapFromApi();
 
-		// Refresh the map every 60 seconds
-		setInterval(getMapFromApi, 60000);
+		// Refresh the map every 15 seconds
+		setInterval(getMapFromApi, 15000);
 
 		queryString = qs.parse($querystring);
-		console.log(queryString);
 
 		if (queryString.type === 'CA') {
 			snackbarTitle = 'Gnam! What a delicious candy!';
@@ -52,14 +52,24 @@
 		}
 	});
 	
+	// TODO: refactor this, find another way to implement this. Garbage code
 	function getMapFromApi() {
-		getMapPromise = getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+		if (isFirstTimeFetched) {
+			isFirstTimeFetched = false;
 
-		getMapPromise.then(res => {
-			mapElements = res.mapobjects;
-
-			mapElementsStore.set(mapElements);
-		});
+			getMapPromise = getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+			getMapPromise.then(res => {
+				mapElements = res.mapobjects;
+				mapElementsStore.set(mapElements);
+			});
+		} else {
+			getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK')
+				.then(res => {
+					mapElements = res.mapobjects;
+					mapElementsStore.set(mapElements);
+				});
+		}
+		
 	}
 
 	const unsubscribe = apiKeyStore.subscribe(key => {
