@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { push, querystring } from 'svelte-spa-router';
+	import { push, querystring, location } from 'svelte-spa-router';
 	import qs from 'qs';
 	import { register, getProfile, setProfile, getMap, getRanking, fightEat } from '../utils/apihandler.js';
 	import { apiKeyStore, apiUrlStore, mapElementsStore } from '../store.js'
@@ -19,7 +19,7 @@
 	let showSnackbar = false;
 	let showMapElementTooFarSnackbar = false;
 
-	let isFirstTimeFetched = true;
+	let isFirstTimeFetched = true; // if true getMapFromApi has never been fetched
 
 	// TODO: set this in the store. Refactor this.
 	const getProfilePromise = getProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
@@ -35,6 +35,7 @@
 		// Refresh the map every 15 seconds
 		setInterval(getMapFromApi, 15000);
 
+		// Handles the Snackbar notification after fighting or eating an element
 		queryString = qs.parse($querystring);
 
 		if (queryString.type === 'CA') {
@@ -75,7 +76,6 @@
 	const unsubscribe = apiKeyStore.subscribe(key => {
 			apiKey = key;
 	});
-	
 </script>
 
 <style>
@@ -92,7 +92,7 @@
 		</Mapbox>
 
 		<Snackbar bind:value={showSnackbar}>
-			<div>{snackbarTitle} - XP:{queryString.xp} LP:{queryString.lp}</div>
+			<div>{snackbarTitle} - LP: {queryString.lp}, XP: {queryString.xp}</div>
 		</Snackbar>
 
 		<Snackbar bind:value={showMapElementTooFarSnackbar}>

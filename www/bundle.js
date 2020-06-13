@@ -9729,7 +9729,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 101, 2, 2728);
+    			add_location(p, file$a, 101, 2, 2863);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -9903,21 +9903,21 @@ var app = (function () {
     	let div;
     	let t0;
     	let t1;
-    	let t2_value = /*queryString*/ ctx[6].xp + "";
+    	let t2_value = /*queryString*/ ctx[6].lp + "";
     	let t2;
     	let t3;
-    	let t4_value = /*queryString*/ ctx[6].lp + "";
+    	let t4_value = /*queryString*/ ctx[6].xp + "";
     	let t4;
 
     	const block = {
     		c: function create() {
     			div = element("div");
     			t0 = text(/*snackbarTitle*/ ctx[2]);
-    			t1 = text(" - XP:");
+    			t1 = text(" - LP: ");
     			t2 = text(t2_value);
-    			t3 = text(" LP:");
+    			t3 = text(", XP: ");
     			t4 = text(t4_value);
-    			add_location(div, file$a, 94, 3, 2516);
+    			add_location(div, file$a, 94, 3, 2648);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -9929,8 +9929,8 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*snackbarTitle*/ 4) set_data_dev(t0, /*snackbarTitle*/ ctx[2]);
-    			if (dirty & /*queryString*/ 64 && t2_value !== (t2_value = /*queryString*/ ctx[6].xp + "")) set_data_dev(t2, t2_value);
-    			if (dirty & /*queryString*/ 64 && t4_value !== (t4_value = /*queryString*/ ctx[6].lp + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*queryString*/ 64 && t2_value !== (t2_value = /*queryString*/ ctx[6].lp + "")) set_data_dev(t2, t2_value);
+    			if (dirty & /*queryString*/ 64 && t4_value !== (t4_value = /*queryString*/ ctx[6].xp + "")) set_data_dev(t4, t4_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
@@ -9956,7 +9956,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			div.textContent = "Oops, this is out of your range!";
-    			add_location(div, file$a, 98, 3, 2658);
+    			add_location(div, file$a, 98, 3, 2793);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -9985,7 +9985,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Fetching";
-    			add_location(p, file$a, 83, 1, 2273);
+    			add_location(p, file$a, 83, 1, 2405);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -10017,7 +10017,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$a, 124, 2, 3233);
+    			add_location(p, file$a, 124, 2, 3368);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -10076,7 +10076,7 @@ var app = (function () {
     			t = space();
     			create_component(chip1.$$.fragment);
     			attr_dev(div, "class", "flex absolute m-5 inset-x-0 bottom-0 justify-center t");
-    			add_location(div, file$a, 111, 2, 2951);
+    			add_location(div, file$a, 111, 2, 3086);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -10208,7 +10208,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Awaiting...";
-    			add_location(p, file$a, 109, 1, 2919);
+    			add_location(p, file$a, 109, 1, 3054);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -10294,9 +10294,9 @@ var app = (function () {
     			div1 = element("div");
     			create_component(button1.$$.fragment);
     			attr_dev(div0, "class", "absolute m-3 left-0 bottom-0 z-10");
-    			add_location(div0, file$a, 104, 0, 2751);
+    			add_location(div0, file$a, 104, 0, 2886);
     			attr_dev(div1, "class", "absolute m-3 right-0 bottom-0");
-    			add_location(div1, file$a, 127, 0, 3256);
+    			add_location(div1, file$a, 127, 0, 3391);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -10395,7 +10395,7 @@ var app = (function () {
     	let snackbarTitle = "";
     	let showSnackbar = false;
     	let showMapElementTooFarSnackbar = false;
-    	let isFirstTimeFetched = true;
+    	let isFirstTimeFetched = true; // if true getMapFromApi has never been fetched
 
     	// TODO: set this in the store. Refactor this.
     	const getProfilePromise = getProfile("https://ewserver.di.unimi.it/mobicomp/mostri", "v6LxCAWaIJGHoLxK");
@@ -10410,9 +10410,10 @@ var app = (function () {
     	onMount(() => {
     		getMapFromApi();
 
-    		// Refresh the map every 60 seconds
-    		setInterval(getMapFromApi, 5000);
+    		// Refresh the map every 15 seconds
+    		setInterval(getMapFromApi, 15000);
 
+    		// Handles the Snackbar notification after fighting or eating an element
     		$$invalidate(6, queryString = lib.parse($querystring));
 
     		if (queryString.type === "CA") {
@@ -10484,6 +10485,7 @@ var app = (function () {
     		onMount,
     		push,
     		querystring,
+    		location,
     		qs: lib,
     		register,
     		getProfile,
@@ -13935,7 +13937,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Error";
-    			add_location(p, file$i, 68, 8, 2197);
+    			add_location(p, file$i, 68, 8, 2211);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -14033,21 +14035,21 @@ var app = (function () {
     			div4 = element("div");
     			create_component(button1.$$.fragment);
     			attr_dev(div0, "class", "flex content-center justify-center m-5");
-    			add_location(div0, file$i, 46, 8, 1297);
+    			add_location(div0, file$i, 46, 8, 1311);
     			attr_dev(p0, "class", "text-2xl");
-    			add_location(p0, file$i, 54, 12, 1626);
+    			add_location(p0, file$i, 54, 12, 1640);
     			attr_dev(div1, "class", "flex content-center justify-center");
-    			add_location(div1, file$i, 53, 8, 1565);
+    			add_location(div1, file$i, 53, 8, 1579);
     			attr_dev(p1, "class", "text-lg");
-    			add_location(p1, file$i, 57, 12, 1749);
+    			add_location(p1, file$i, 57, 12, 1763);
     			attr_dev(div2, "class", "flex content-center justify-center");
-    			add_location(div2, file$i, 56, 8, 1688);
+    			add_location(div2, file$i, 56, 8, 1702);
     			attr_dev(div3, "class", "mr-5");
-    			add_location(div3, file$i, 60, 12, 1874);
+    			add_location(div3, file$i, 60, 12, 1888);
     			attr_dev(div4, "class", "ml-5");
-    			add_location(div4, file$i, 63, 12, 2042);
+    			add_location(div4, file$i, 63, 12, 2056);
     			attr_dev(div5, "class", "flex content-end justify-center");
-    			add_location(div5, file$i, 59, 8, 1816);
+    			add_location(div5, file$i, 59, 8, 1830);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div0, anchor);
@@ -14195,7 +14197,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Awaiting....";
-    			add_location(p, file$i, 44, 4, 1255);
+    			add_location(p, file$i, 44, 4, 1269);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -14337,6 +14339,7 @@ var app = (function () {
     		onMount,
     		push,
     		querystring,
+    		location,
     		mapElementsStore,
     		getImage,
     		fightEat,
@@ -14471,7 +14474,7 @@ var app = (function () {
     		c: function create() {
     			body = element("body");
     			create_component(router.$$.fragment);
-    			add_location(body, file$k, 10, 0, 149);
+    			add_location(body, file$k, 32, 0, 580);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -14509,6 +14512,32 @@ var app = (function () {
     }
 
     function instance$l($$self, $$props, $$invalidate) {
+    	let $location;
+    	validate_store(location, "location");
+    	component_subscribe($$self, location, $$value => $$invalidate(0, $location = $$value));
+
+    	document.addEventListener(
+    		"backbutton",
+    		e => {
+    			e.preventDefault();
+
+    			switch ($location) {
+    				case "/fighteat":
+    				case "/ranking":
+    				case "/profile":
+    					replace("/");
+    					break;
+    				case "/profile/edit":
+    					replace("/profile");
+    					break;
+    				default:
+    					replace("/");
+    					break;
+    			}
+    		},
+    		false
+    	);
+
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
@@ -14517,7 +14546,15 @@ var app = (function () {
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("App", $$slots, []);
-    	$$self.$capture_state = () => ({ Router, routes });
+
+    	$$self.$capture_state = () => ({
+    		Router,
+    		replace,
+    		location,
+    		routes,
+    		$location
+    	});
+
     	return [];
     }
 

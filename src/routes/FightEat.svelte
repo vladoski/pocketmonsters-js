@@ -1,7 +1,7 @@
 <script>
     import qs from 'qs';
     import { onMount } from 'svelte';
-    import {push, querystring} from 'svelte-spa-router'
+    import {push, querystring, location} from 'svelte-spa-router'
     import { mapElementsStore } from '../store.js';
     import { getImage, fightEat } from '../utils/apihandler.js';
 
@@ -19,7 +19,7 @@
     }
 
     console.log(element);
-
+    
     const getImagePromise = getImage('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', elementId)
         .then(imgBase64 => {
             elementImage = imgBase64.img;
