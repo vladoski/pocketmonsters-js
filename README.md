@@ -6,5 +6,31 @@ The player has to fight three types of monsters around the Milan Metropolitan Ar
 
 This version is developed using Svelte.js and Cordova (instead of Android SDK in Java). I've used Mapbox GL JS for everything that concernes the map.
 
+## Installation
+Firstly you have to get Phonegap installed globally using:
+```
+npm install -g phonegap@latest
+```
+Then it's needed to install all the packages used in the project with
+```
+npm install
+```
+And last but not least, preparing Phonegap (i.e. plugin configuration)
+```
+phonegap prepare
+```
+
+## Running
+To run the app in the browser execute this command:
+```
+npm run dev
+```
+To run the app in Android, do:
+```
+phonegap run android
+```
+
 #### Disclaimer
+This app has been tested and developed only for Android and browser platforms (no iOS).
+
 I do not host the API, so if the app won't reach the server that means that the professor took down the server.
