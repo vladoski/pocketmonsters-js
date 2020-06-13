@@ -8,6 +8,7 @@
 	// Overwrites and handles Android's system back button behaviour ()
 	document.addEventListener('backbutton', e => {
 		e.preventDefault();
+		//alert($location)
 
 		switch ($location) {
 			case '/fighteat':

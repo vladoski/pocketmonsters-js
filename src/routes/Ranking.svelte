@@ -4,6 +4,7 @@
     import { profileDataStore } from '../store.js';
     import { getRanking } from '../utils/apihandler.js';
 
+    import Header from '../components/Header.svelte';
     import MaterialList from '../components/MaterialList.svelte';
 
     let rankingData;
@@ -43,6 +44,9 @@
     {#await rankingPromise}
         <p>Awaiting...</p>
         {:then _}
+            <Header 
+                title="Ranking"
+                goto={'/'} />
             <MaterialList items={rankingList} />
         {:catch}
         <p>Error</p>

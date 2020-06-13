@@ -4,6 +4,8 @@
     import { profileDataStore } from '../store.js';
     import { getProfile } from '../utils/apihandler.js';
 
+    import Header from '../components/Header.svelte';
+
     import Image from 'smelte/src/components/Image';
     import Button from "smelte/src/components/Button";
     
@@ -25,6 +27,9 @@
 {#await getProfilePromise}
     <p>Awaiting....</p>
     {:then _}
+        <Header 
+            title="Profile"
+            goto={'/'}/>
         <div class="flex content-center justify-center m-5">
             <Image
                 src={'data:image/jpeg;charset=utf-8;base64,' + profileData.img} 

@@ -4,6 +4,8 @@
     import { profileDataStore } from '../store.js';
     import { setProfile } from '../utils/apihandler.js';
 
+    import Header from '../components/Header.svelte';
+
     import TextField from 'smelte/src/components/TextField';
     import Button from "smelte/src/components/Button";
     
@@ -64,6 +66,9 @@
 
 
 <div>
+    <Header 
+        title="Edit profile"
+        goto={'/profile'} />
     <div class="flex justify-center">
         <TextField label="Username" bind:value={username}/>
     </div>

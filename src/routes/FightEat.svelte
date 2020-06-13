@@ -5,6 +5,8 @@
     import { mapElementsStore } from '../store.js';
     import { getImage, fightEat } from '../utils/apihandler.js';
 
+    import Header from '../components/Header.svelte';
+
     import Image from 'smelte/src/components/Image';
     import Button from "smelte/src/components/Button";
     
@@ -44,6 +46,9 @@
 {#await getImagePromise}
     <p>Awaiting....</p>
     {:then _}
+        <Header 
+            title={element.type === 'MO' ? 'Fight' : 'Eat'}
+            goto={'/'}/>
         <div class="flex content-center justify-center m-5">
             <Image
                 src={'data:image/jpeg;charset=utf-8;base64,' + elementImage} 
