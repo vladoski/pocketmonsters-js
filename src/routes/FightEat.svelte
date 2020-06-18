@@ -53,6 +53,7 @@
             <Image
                 src={'data:image/jpeg;charset=utf-8;base64,' + elementImage} 
                 alt="Profile image"
+                class="rounded-full"
                 height={180}
                 width={180}/>
         </div>
@@ -62,7 +63,7 @@
         <div class="flex content-center justify-center">
             <p class="text-lg">Size: {element.size}</p>
         </div>
-        <div class="flex content-end justify-center">
+        <div class="flex content-end justify-center mt-8">
             <div class="mr-5">
                 <Button icon="check_circle" on:click={fightEatNow}>{element.type === 'CA' ? 'Eat' : 'Fight'}</Button>
             </div>

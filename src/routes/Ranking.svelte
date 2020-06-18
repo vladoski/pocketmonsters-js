@@ -47,7 +47,7 @@
             <Header 
                 title="Ranking"
                 goto={'/'} />
-            <MaterialList items={rankingList} />
+            <MaterialList class="-mt-4" items={rankingList} />
         {:catch}
         <p>Error</p>
     {/await}

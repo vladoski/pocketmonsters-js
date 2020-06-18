@@ -48,7 +48,15 @@
     .add("text-gray-600", disabled)
     .add(className)
     .get();
+    console.log(tabindex);
+    
 </script>
+
+<style>
+  .pushImage {
+    margin-right: 2.1rem;
+  }
+</style>
 
 <li
   use:ripple
@@ -57,10 +65,11 @@
   on:keypress={change}
   on:click={change}
   on:click>
-  <p class="text-3xl mr-5 text-right">{tabindex}</p>
+  <p class="text-3xl mr-5 text-right" class:pushImage={tabindex < 10}>{tabindex < 10 ? '\xa0' + tabindex : tabindex}</p>
   {#if image}
     <Image
-      src={image} 
+      src={image}
+      class="rounded-full border"
       height={90}
       width={90} />
   {/if}

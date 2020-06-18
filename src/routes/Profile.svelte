@@ -21,7 +21,11 @@
 </script>
 
 <style>
-
+    .statIconSize {
+        font-size: 5rem !important;
+        line-height: 1.1 !important;
+        margin-right: 1rem;
+    }
 </style>
 
 {#await getProfilePromise}
@@ -32,20 +36,21 @@
             goto={'/'}/>
         <div class="flex content-center justify-center m-5">
             <Image
-                src={'data:image/jpeg;charset=utf-8;base64,' + profileData.img} 
+                src={'data:image/jpeg;charset=utf-8;base64,' + profileData.img}
+                class="rounded-full"
                 alt="Profile image"
                 height={180}
                 width={180}/>
         </div>
         <div>
             <div class="flex justify-center">
-                <p class="body-1 font-bold">{profileData.username}</p>
+                <p class="h4">{profileData.username}</p>
             </div>
             <div class="flex justify-center">
-                <p class="body-1">Life points: {profileData.xp}</p>
+                <i aria-hidden="true" class="material-icons icon statIconSize text-error-500">favorite</i> <p class="text-4xl"> {profileData.xp}</p>
             </div>
             <div class="flex justify-center">
-                <p class="body-1">Experience points: {profileData.lp}</p>
+                <i aria-hidden="true" class="material-icons icon statIconSize text-secondary-500">stars</i> <p class="text-4xl"> {profileData.xp}</p>
             </div>
         </div>
         <div class="flex content-end justify-center m-5">

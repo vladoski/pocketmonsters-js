@@ -65,12 +65,12 @@
 </style>
 
 
-<div>
+<div class="mt-5">
     <Header 
         title="Edit profile"
         goto={'/profile'} />
     <div class="flex justify-center">
-        <TextField label="Username" bind:value={username}/>
+        <TextField label="Username" bind:value={username} outlined/>
     </div>
     <div class="flex content-end justify-center m-5">
         <Button on:click={changeProfilePic}>Upload new picture</Button>
