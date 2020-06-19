@@ -48,16 +48,7 @@
 			showZoom: false
 		}));
 
-		// Add location marker on the map
-		map.addControl(
-			new mapboxgl.GeolocateControl({
-				positionOptions: {
-					enableHighAccuracy: true
-				},
-				trackUserLocation: true
-			})
-		);
-
+		// Add location marker on the map and geolocation functionality
 		const geolocate = new mapboxgl.GeolocateControl({
 			positionOptions: {
 				enableHighAccuracy: true,
@@ -65,6 +56,8 @@
 			trackUserLocation: true,
 			showUserLocation: true
 		});
+
+		map.addControl(geolocate);
 
 		// Moves the attribution up in the left corner
 		map.on('load', function() {
@@ -75,7 +68,17 @@
 			isMapLoaded = true; // TODO: refactor this pattern
 		});
 
+		// Gives only the first time the current position of the device
 		navigator.geolocation.getCurrentPosition(position => {
+			coords = [position.coords.latitude, position.coords.longitude];
+		},
+		err => {
+			// TODO: handler errors if the location retrieval has problems
+			console.log(err);
+		});
+
+		// Gives the device position everytime that it's changed
+		navigator.geolocation.watchPosition(position => {
 			coords = [position.coords.latitude, position.coords.longitude];
 		},
 		err => {

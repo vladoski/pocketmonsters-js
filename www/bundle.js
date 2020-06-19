@@ -3788,7 +3788,7 @@ var app = (function () {
     const { console: console_1$1, document: document_1 } = globals;
     const file = "src/components/Mapbox.svelte";
 
-    // (166:1) {#if map}
+    // (169:1) {#if map}
     function create_if_block$1(ctx) {
     	let current;
     	const default_slot_template = /*$$slots*/ ctx[14].default;
@@ -3830,7 +3830,7 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(166:1) {#if map}",
+    		source: "(169:1) {#if map}",
     		ctx
     	});
 
@@ -3852,10 +3852,10 @@ var app = (function () {
     			if (if_block) if_block.c();
     			attr_dev(link, "rel", "stylesheet");
     			attr_dev(link, "href", "mapbox-gl.css");
-    			add_location(link, file, 161, 1, 4337);
+    			add_location(link, file, 164, 1, 4598);
     			attr_dev(div, "id", "mapbox");
     			attr_dev(div, "class", "svelte-1w4l22h");
-    			add_location(div, file, 164, 0, 4398);
+    			add_location(div, file, 167, 0, 4659);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3959,17 +3959,14 @@ var app = (function () {
 
     		map.addControl(new mapboxGl.NavigationControl({ showCompass: true, showZoom: false }));
 
-    		// Add location marker on the map
-    		map.addControl(new mapboxGl.GeolocateControl({
-    				positionOptions: { enableHighAccuracy: true },
-    				trackUserLocation: true
-    			}));
-
+    		// Add location marker on the map and geolocation functionality
     		const geolocate = new mapboxGl.GeolocateControl({
     				positionOptions: { enableHighAccuracy: true },
     				trackUserLocation: true,
     				showUserLocation: true
     			});
+
+    		map.addControl(geolocate);
 
     		// Moves the attribution up in the left corner
     		map.on("load", function () {
@@ -3979,7 +3976,19 @@ var app = (function () {
     			isMapLoaded = true; // TODO: refactor this pattern
     		});
 
+    		// Gives only the first time the current position of the device
     		navigator.geolocation.getCurrentPosition(
+    			position => {
+    				coords = [position.coords.latitude, position.coords.longitude];
+    			},
+    			err => {
+    				// TODO: handler errors if the location retrieval has problems
+    				console.log(err);
+    			}
+    		);
+
+    		// Gives the device position everytime that it's changed
+    		navigator.geolocation.watchPosition(
     			position => {
     				coords = [position.coords.latitude, position.coords.longitude];
     			},
