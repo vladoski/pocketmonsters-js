@@ -21,7 +21,7 @@
 </script>
 
 <style>
-    .statIconSize {
+    .stat-icon-size {
         font-size: 5rem !important;
         line-height: 1.1 !important;
         margin-right: 1rem;
@@ -37,20 +37,20 @@
         <div class="flex content-center justify-center m-5">
             <Image
                 src={'data:image/jpeg;charset=utf-8;base64,' + profileData.img}
-                class="rounded-full"
+                class="rounded-full h-48 w-48 border"
                 alt="Profile image"
                 height={180}
                 width={180}/>
         </div>
-        <div>
+        <div class="text-gray-800">
             <div class="flex justify-center">
                 <p class="h4">{profileData.username}</p>
             </div>
             <div class="flex justify-center">
-                <i aria-hidden="true" class="material-icons icon statIconSize text-error-500">favorite</i> <p class="text-4xl"> {profileData.xp}</p>
+                <i aria-hidden="true" class="material-icons icon stat-icon-size text-error-500">favorite</i> <p class="text-4xl"> {profileData.xp}</p>
             </div>
             <div class="flex justify-center">
-                <i aria-hidden="true" class="material-icons icon statIconSize text-secondary-500">stars</i> <p class="text-4xl"> {profileData.xp}</p>
+                <i aria-hidden="true" class="material-icons icon stat-icon-size text-secondary-500">stars</i> <p class="text-4xl"> {profileData.xp}</p>
             </div>
         </div>
         <div class="flex content-end justify-center m-5">

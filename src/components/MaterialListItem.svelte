@@ -7,7 +7,7 @@
 
   const classesDefault = "focus:bg-gray-50 dark-focus:bg-gray-700 hover:bg-gray-transDark relative overflow-hidden transition-fast p-4 cursor-pointer text-gray-700 dark:text-gray-100 flex items-center z-10";
   const selectedClassesDefault = "bg-gray-200 dark:bg-primary-transLight";
-  const subheadingClassesDefault = "text-gray-600 p-0 text-sm";
+  const subheadingClassesDefault = "text-gray-700 p-0 text-sm";
 
   export let image = "";
   export let id = "";
@@ -46,9 +46,9 @@
     .add(selectedClasses, selected, selectedClassesDefault)
     .add("py-2", dense)
     .add("text-gray-600", disabled)
+    .add("border")
     .add(className)
     .get();
-    console.log(tabindex);
     
 </script>
 
@@ -65,16 +65,17 @@
   on:keypress={change}
   on:click={change}
   on:click>
-  <p class="text-3xl mr-5 text-right" class:pushImage={tabindex < 10}>{tabindex < 10 ? '\xa0' + tabindex : tabindex}</p>
+  <p class={tabindex < 4 ? "text-3xl mr-5 text-right text-primary-500 text-secondary-500" : 'text-3xl mr-5 text-right text-primary-500'}
+     class:pushImage={tabindex < 10}>{tabindex < 10 ? '\xa0' + tabindex : tabindex}</p>
   {#if image}
     <Image
       src={image}
-      class="rounded-full border"
+      class="rounded-full w-20 h-20"
       height={90}
       width={90} />
   {/if}
 
-  <div class="flex flex-col ml-5 p-0">
+  <div class="flex flex-col ml-5 p-0 text-gray-800">
     <div class={className}>
       <slot>{text}</slot>
     </div>

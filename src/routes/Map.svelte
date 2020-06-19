@@ -78,8 +78,6 @@
 	});
 </script>
 
-<style>
-</style>
 {#await getMapPromise}
 	<p>Fetching</p>
 	{:then _}

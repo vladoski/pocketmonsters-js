@@ -4,9 +4,10 @@
 .label-top.svelte-81hn54{line-height:0.05}.label-transition.svelte-81hn54{transition:font-size 0.05s, line-height 0.1s}
 .line.svelte-xd9zs6{height:1px}
 .wrapper.svelte-142y8oi{display:inline-block}
-#title.svelte-1vjclu3{margin-top:-4.5vh}
+#title.svelte-9642i2{margin-top:-4vh}
 #mapbox.svelte-1w4l22h{position:absolute;top:0;bottom:0;width:100%}
 .pushImage.svelte-1n8vm2f{margin-right:2.1rem}
-.statIconSize.svelte-w98qvs{font-size:5rem !important;line-height:1.1 !important;margin-right:1rem}
+.ok-icon.svelte-jqil31{margin-left:0.2rem !important;font-size:2rem !important;line-height:1.1}
+.stat-icon-size.svelte-1tl15aw{font-size:5rem !important;line-height:1.1 !important;margin-right:1rem}
 
 /*# sourceMappingURL=bundle.css.map */

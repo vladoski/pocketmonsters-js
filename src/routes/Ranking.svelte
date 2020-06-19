@@ -36,10 +36,6 @@
 
 </script>
 
-<style>
-
-</style>
-
 <div>
     {#await rankingPromise}
         <p>Awaiting...</p>

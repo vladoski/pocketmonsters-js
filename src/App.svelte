@@ -28,9 +28,6 @@
 	}, false);
 </script>
 
-<style>
-</style>
-
 <body>
     <Router {routes}/>
 </body>

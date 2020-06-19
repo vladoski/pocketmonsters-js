@@ -11,6 +11,7 @@
     
     let username;
     let profileImage;
+    let isImageValid = false;
 
     let profileData;
     const unsubscribe = profileDataStore.subscribe(_profileData => {
@@ -31,8 +32,10 @@
     function cameraCallback(imageData) {
         if(imageData.length >= 137000){
             alert("The image you picked is too big! Please select an image smaller than 100kb.");
+            isImageValid = false;
         } else {
             profileImage = imageData;
+            isImageValid = true;
         }
     }
 
@@ -57,13 +60,15 @@
     }
 
     onDestroy(() => unsubscribe());
-    
 </script>
 
 <style>
-
+    .ok-icon {
+        margin-left: 0.2rem !important;
+        font-size: 2rem !important;
+        line-height: 1.1;
+    }
 </style>
-
 
 <div class="mt-5">
     <Header 
@@ -74,6 +79,10 @@
     </div>
     <div class="flex content-end justify-center m-5">
         <Button on:click={changeProfilePic}>Upload new picture</Button>
+
+        {#if isImageValid}
+            <i aria-hidden="true" class="material-icons text-secondary-500 ok-icon">check_circle</i>
+        {/if}
     </div>
 </div>
 <div class="flex content-end justify-center m-5">

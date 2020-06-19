@@ -20,8 +20,6 @@
         element = $mapElementsStore.find(el => el.id === elementId);
     }
 
-    console.log(element);
-    
     const getImagePromise = getImage('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', elementId)
         .then(imgBase64 => {
             elementImage = imgBase64.img;
@@ -31,17 +29,10 @@
         let getFightEatPromise = fightEat('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', elementId)
             .then(json => {
                 const queryString = qs.stringify({...json, type: element.type});
-                console.log(queryString);
                 push('/?' + queryString);
             });
     }
-
-
 </script>
-
-<style>
-
-</style>
 
 {#await getImagePromise}
     <p>Awaiting....</p>
@@ -53,22 +44,22 @@
             <Image
                 src={'data:image/jpeg;charset=utf-8;base64,' + elementImage} 
                 alt="Profile image"
-                class="rounded-full"
+                class="rounded-full border"
                 height={180}
                 width={180}/>
         </div>
         <div class="flex content-center justify-center">
-            <p class="text-2xl">{element.name}</p>
+            <p class="text-2xl text-gray-800 text-center">{element.name}</p>
         </div>
         <div class="flex content-center justify-center">
-            <p class="text-lg">Size: {element.size}</p>
+            <p class="text-lg text-gray-800">Size: {element.size}</p>
         </div>
         <div class="flex content-end justify-center mt-8">
             <div class="mr-5">
-                <Button icon="check_circle" on:click={fightEatNow}>{element.type === 'CA' ? 'Eat' : 'Fight'}</Button>
+                <Button icon="check_circle" on:click={fightEatNow}>{element.type === 'CA' ? '\xa0 Eat' : '\xa0 Fight'}</Button>
             </div>
             <div class="ml-5">
-                <Button icon="cancel" on:click={() => push('/')}>Cancel</Button>
+                <Button icon="cancel" on:click={() => push('/')}>&nbsp; Cancel</Button>
             </div>
         </div>
     {:catch}

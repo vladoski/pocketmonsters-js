@@ -1,1 +1,1 @@
-<h1>Not found</h1>
+<h1 class="text-gray-800">Not found</h1>
