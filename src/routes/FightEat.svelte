@@ -2,7 +2,7 @@
     import qs from 'qs';
     import { onMount } from 'svelte';
     import {push, querystring, location} from 'svelte-spa-router'
-    import { mapElementsStore } from '../store.js';
+    import { apiKeyStore, apiUrlStore, mapElementsStore } from '../store.js';
     import { getImage, fightEat } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
@@ -20,13 +20,13 @@
         element = $mapElementsStore.find(el => el.id === elementId);
     }
 
-    const getImagePromise = getImage('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', elementId)
+    const getImagePromise = getImage($apiUrlStore, $apiKeyStore, elementId)
         .then(imgBase64 => {
             elementImage = imgBase64.img;
         });
 
     function fightEatNow() {
-        let getFightEatPromise = fightEat('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', elementId)
+        let getFightEatPromise = fightEat($apiUrlStore, $apiKeyStore, elementId)
             .then(json => {
                 const queryString = qs.stringify({...json, type: element.type});
                 push('/?' + queryString);

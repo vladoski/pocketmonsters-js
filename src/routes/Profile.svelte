@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { push } from 'svelte-spa-router';
-    import { profileDataStore } from '../store.js';
+    import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
     import { getProfile } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
@@ -11,7 +11,7 @@
     
 
     let profileData;
-    let getProfilePromise = getProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK')
+    let getProfilePromise = getProfile($apiUrlStore, $apiKeyStore)
         .then(json => {
             profileData = json;
             profileDataStore.set(profileData);

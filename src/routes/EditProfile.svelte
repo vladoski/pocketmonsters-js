@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { push } from 'svelte-spa-router';
-    import { profileDataStore } from '../store.js';
+    import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
     import { setProfile } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
@@ -44,7 +44,7 @@
     }
 
     async function editProfile() {
-        const isResOk = await setProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK', username, profileImage);
+        const isResOk = await setProfile($apiUrlStore, $apiKeyStore, username, profileImage);
         
         if (isResOk) {
             profileDataStore.update(data => {

@@ -30,7 +30,6 @@
 	});
 
 	onMount(async () => {
-
         // Default Mapbox API key from the docs
         mapboxgl.accessToken = 'pk.eyJ1IjoidmxhZG9za2kiLCJhIjoiY2szNzFrbnBqMDc0aDNjbnMxZ3R1cDlobCJ9.hrd1syWrQqTE-4Ucn0UW_w';
 

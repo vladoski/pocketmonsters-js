@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import { push } from 'svelte-spa-router';
-    import { profileDataStore } from '../store.js';
+    import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
     import { getRanking } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
@@ -10,7 +10,7 @@
     let rankingData;
     let rankingList;
 
-    const rankingPromise = getRanking('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+    const rankingPromise = getRanking($apiUrlStore, $apiKeyStore);
     rankingPromise.then(res => {
             rankingData = res.ranking;
 

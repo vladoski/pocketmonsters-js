@@ -21,8 +21,24 @@
 
 	let isFirstTimeFetched = true; // if true getMapFromApi has never been fetched
 
+	const unsubscribe = apiKeyStore.subscribe(key => {
+			apiKey = key;
+	});
+
+	// Check if apiKey is present in localStorage, if not register to the game API
+	if (localStorage.getItem('apiKey')) {
+		apiKeyStore.set(localStorage.getItem('apiKey'));
+	} else {
+		register($apiUrlStore)
+			.then(res => {
+				localStorage.setItem('apiKey', res.session_id);
+				apiKeyStore.set(res.session_id);
+			});
+	}
+	
 	// TODO: set this in the store. Refactor this.
-	const getProfilePromise = getProfile('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+	// TODO: [bug] this runs before the localstorage key retrieval, important bug to fix
+	const getProfilePromise = getProfile($apiUrlStore, apiKey);
 	getProfilePromise.then(json => {
 		profileData = json;
 	});
@@ -58,24 +74,19 @@
 		if (isFirstTimeFetched) {
 			isFirstTimeFetched = false;
 
-			getMapPromise = getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK');
+			getMapPromise = getMap($apiUrlStore, apiKey);
 			getMapPromise.then(res => {
 				mapElements = res.mapobjects;
 				mapElementsStore.set(mapElements);
 			});
 		} else {
-			getMap('https://ewserver.di.unimi.it/mobicomp/mostri', 'v6LxCAWaIJGHoLxK')
+			getMap($apiUrlStore, apiKey)
 				.then(res => {
 					mapElements = res.mapobjects;
 					mapElementsStore.set(mapElements);
 				});
 		}
-		
 	}
-
-	const unsubscribe = apiKeyStore.subscribe(key => {
-			apiKey = key;
-	});
 </script>
 
 {#await getMapPromise}
