@@ -5,6 +5,7 @@
     import { getProfile } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
+    import LoadingSpinner from '../components/LoadingSpinner.svelte';
 
     import Image from 'smelte/src/components/Image';
     import Button from "smelte/src/components/Button";
@@ -29,7 +30,7 @@
 </style>
 
 {#await getProfilePromise}
-    <p>Awaiting....</p>
+    <LoadingSpinner />
     {:then _}
         <Header 
             title="Profile"

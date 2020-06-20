@@ -6,6 +6,7 @@
 	import { apiKeyStore, apiUrlStore, mapElementsStore } from '../store.js'
 
 	import Mapbox from '../components/Mapbox.svelte';
+	import LoadingSpinner from '../components/LoadingSpinner.svelte';
 
 	import Chip from 'smelte/src/components/Chip';
 	import Button from "smelte/src/components/Button";
@@ -90,7 +91,7 @@
 </script>
 
 {#await getMapPromise}
-	<p>Fetching</p>
+	<LoadingSpinner />
 	{:then _}
 		<Mapbox
 			lat={45.4642}
@@ -116,7 +117,7 @@
 </div>
 
 {#await getProfilePromise}
-	<p>Awaiting...</p>
+	<LoadingSpinner />
 	{:then _}
 		<div class='flex absolute m-5 inset-x-0 bottom-0 justify-center t'>
 			<Chip

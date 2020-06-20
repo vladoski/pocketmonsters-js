@@ -6,6 +6,7 @@
 
     import Header from '../components/Header.svelte';
     import MaterialList from '../components/MaterialList.svelte';
+    import LoadingSpinner from '../components/LoadingSpinner.svelte';
 
     let rankingData;
     let rankingList;
@@ -38,7 +39,7 @@
 
 <div>
     {#await rankingPromise}
-        <p>Awaiting...</p>
+        <LoadingSpinner />
         {:then _}
             <Header 
                 title="Ranking"
