@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { push } from 'svelte-spa-router';
+    import { push, replace } from 'svelte-spa-router';
     import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
     import { getProfile } from '../utils/apihandler.js';
 
@@ -16,7 +16,8 @@
         .then(json => {
             profileData = json;
             profileDataStore.set(profileData);
-        });
+        })
+        .catch(error => replace('/error?err=' + error));
     
     $: {
         if (window.innerWidth > window.innerHeight) {
@@ -25,7 +26,8 @@
             isLandscape = false;
         }
     }
-
+    console.log($apiKeyStore);
+    console.log($apiUrlStore);
 </script>
 
 <style>
@@ -65,14 +67,11 @@
                     <p class="h4">{profileData.username}</p>
                 </div>
                 <div class="flex justify-center">
-                    <i aria-hidden="true" class="material-icons icon stat-icon-size text-error-500">favorite</i> <p class="text-4xl"> {profileData.xp}</p>
+                    <i aria-hidden="true" class="material-icons icon stat-icon-size text-error-500">favorite</i> <p class="text-4xl"> {profileData.lp}</p>
                 </div>
                 <div class="flex justify-center">
                     <i aria-hidden="true" class="material-icons icon stat-icon-size text-secondary-500">stars</i> <p class="text-4xl"> {profileData.xp}</p>
                 </div>
-            </div>
-            <div class="flex content-end justify-center m-5">
-                <Button on:click={() => push('/profile/edit') }>Edit profile</Button>
             </div>
         {:else}
             <div class="grid grid-cols-2 center-content text-center">
@@ -93,10 +92,10 @@
                     </div>
                 </div>
             </div>
-            <div class="flex content-end justify-center m-5">
-                <Button on:click={() => push('/profile/edit') }>Edit profile</Button>
-            </div>
         {/if}
+        <div class="flex content-end justify-center m-5">
+            <Button on:click={() => push('/profile/edit') }>Edit profile</Button>
+        </div>
     {:catch}
         <p>Error</p>
 {/await}

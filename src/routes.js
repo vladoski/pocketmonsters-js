@@ -3,6 +3,7 @@ import Profile from './routes/Profile.svelte';
 import EditProfile from './routes/EditProfile.svelte';
 import Ranking from './routes/Ranking.svelte';
 import FightEat from './routes/FightEat.svelte';
+import ErrorPage from './routes/Error.svelte';
 import NotFound from './routes/NotFound.svelte';
 
 const routes = {
@@ -11,6 +12,7 @@ const routes = {
     '/profile/edit': EditProfile,
     '/ranking': Ranking,
     '/fighteat': FightEat,
+    '/error': ErrorPage,
     '*': NotFound
 }
 

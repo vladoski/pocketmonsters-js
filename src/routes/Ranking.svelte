@@ -31,9 +31,7 @@
                 return listItem;
             });
         })
-        .catch(error => {
-            console.log(error);
-        });
+        .catch(error => replace('/error?err=' + error));
 
 </script>
 

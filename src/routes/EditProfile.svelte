@@ -22,11 +22,13 @@
 
     function changeProfilePic() {
         // Retrieve image file location from specified source
-        navigator.camera.getPicture(cameraCallback, cameraError, { quality: 50,
-            destinationType: Camera.DestinationType.DATA_URL,
-            correctOrientation: true,
-            mediaType: Camera.MediaType.PICTURE, 
-            sourceType: Camera.PictureSourceType.SAVEDPHOTOALBUM});
+        navigator.camera.getPicture(cameraCallback, cameraError,
+            { quality: 50,
+                destinationType: Camera.DestinationType.DATA_URL,
+                correctOrientation: true,
+                mediaType: Camera.MediaType.PICTURE, 
+                sourceType: Camera.PictureSourceType.SAVEDPHOTOALBUM
+            });
     }
 
     function cameraCallback(imageData) {
@@ -40,7 +42,7 @@
     }
 
     function cameraError(imageData) {
-        console.log("ERROR: Could not retreive image.") // TODO: implement error visualisation
+        alert("ERROR: Could not retreive image.") // TODO: implement error visualisation
     }
 
     async function editProfile() {

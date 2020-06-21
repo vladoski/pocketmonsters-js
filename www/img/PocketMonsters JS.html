@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!-- saved from url=(0024)http://localhost:3000/#/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <meta http-equiv="Content-Security-Policy" content="default-src * &#39;unsafe-inline&#39; &#39;unsafe-eval&#39; data: blob:;">
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    
+    <!-- Good default declaration:
+    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+        * Enable inline JS: add 'unsafe-inline' to default-src
+        * Enable eval(): add 'unsafe-eval' to default-src
+    * Create your own at http://cspisawesome.com
+    -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+    
+    <title>PocketMonsters JS</title>
+
+    <link rel="icon" type="image/png" href="http://localhost:3000/favicon.png">
+	<link rel="stylesheet" href="./PocketMonsters JS_files/global.css">
+    <link rel="stylesheet" href="./PocketMonsters JS_files/bundle.css">
+    <link href="./PocketMonsters JS_files/css" rel="stylesheet">
+
+<script src="./PocketMonsters JS_files/cordova_plugins.js.download"></script><script src="./PocketMonsters JS_files/battery.js.download"></script><script src="./PocketMonsters JS_files/BatteryProxy.js.download"></script><script src="./PocketMonsters JS_files/CameraConstants.js.download"></script><script src="./PocketMonsters JS_files/CameraPopoverOptions.js.download"></script><script src="./PocketMonsters JS_files/Camera.js.download"></script><script src="./PocketMonsters JS_files/CameraProxy.js.download"></script><script src="./PocketMonsters JS_files/DirectoryEntry.js.download"></script><script src="./PocketMonsters JS_files/DirectoryReader.js.download"></script><script src="./PocketMonsters JS_files/Entry.js.download"></script><script src="./PocketMonsters JS_files/File.js.download"></script><script src="./PocketMonsters JS_files/FileEntry.js.download"></script><script src="./PocketMonsters JS_files/FileError.js.download"></script><script src="./PocketMonsters JS_files/FileReader.js.download"></script><script src="./PocketMonsters JS_files/FileSystem.js.download"></script><script src="./PocketMonsters JS_files/FileUploadOptions.js.download"></script><script src="./PocketMonsters JS_files/FileUploadResult.js.download"></script><script src="./PocketMonsters JS_files/FileWriter.js.download"></script><script src="./PocketMonsters JS_files/Flags.js.download"></script><script src="./PocketMonsters JS_files/LocalFileSystem.js.download"></script><script src="./PocketMonsters JS_files/Metadata.js.download"></script><script src="./PocketMonsters JS_files/ProgressEvent.js.download"></script><script src="./PocketMonsters JS_files/fileSystems.js.download"></script><script src="./PocketMonsters JS_files/requestFileSystem.js.download"></script><script src="./PocketMonsters JS_files/resolveLocalFileSystemURI.js.download"></script><script src="./PocketMonsters JS_files/isChrome.js.download"></script><script src="./PocketMonsters JS_files/Preparing.js.download"></script><script src="./PocketMonsters JS_files/FileProxy.js.download"></script><script src="./PocketMonsters JS_files/fileSystemPaths.js.download"></script><script src="./PocketMonsters JS_files/FileSystem.js(1).download"></script><script src="./PocketMonsters JS_files/CaptureAudioOptions.js.download"></script><script src="./PocketMonsters JS_files/CaptureImageOptions.js.download"></script><script src="./PocketMonsters JS_files/CaptureVideoOptions.js.download"></script><script src="./PocketMonsters JS_files/CaptureError.js.download"></script><script src="./PocketMonsters JS_files/MediaFileData.js.download"></script><script src="./PocketMonsters JS_files/MediaFile.js.download"></script><script src="./PocketMonsters JS_files/helpers.js.download"></script><script src="./PocketMonsters JS_files/capture.js.download"></script><script src="./PocketMonsters JS_files/CaptureProxy.js.download"></script><script src="./PocketMonsters JS_files/device.js.download"></script><script src="./PocketMonsters JS_files/DeviceProxy.js.download"></script><script src="./PocketMonsters JS_files/notification.js.download"></script><script src="./PocketMonsters JS_files/notification.js(1).download"></script><script src="./PocketMonsters JS_files/GlobalizationError.js.download"></script><script src="./PocketMonsters JS_files/globalization.js.download"></script><script src="./PocketMonsters JS_files/moment.js.download"></script><script src="./PocketMonsters JS_files/GlobalizationProxy.js.download"></script><script src="./PocketMonsters JS_files/inappbrowser.js.download"></script><script src="./PocketMonsters JS_files/InAppBrowserProxy.js.download"></script><script src="./PocketMonsters JS_files/network.js.download"></script><script src="./PocketMonsters JS_files/Connection.js.download"></script><script src="./PocketMonsters JS_files/network.js(1).download"></script><script src="./PocketMonsters JS_files/Vibration.js.download"></script><script src="./PocketMonsters JS_files/Vibration.js(1).download"></script><style></style><link rel="stylesheet" href="./PocketMonsters JS_files/mapbox-gl.css"></head>
+
+<body>
+    
+    
+    <script type="text/javascript" src="./PocketMonsters JS_files/cordova.js.download"></script>
+    <script src="./PocketMonsters JS_files/bundle.js.download"></script><body> <div id="mapbox" class="svelte-1o6ak5i mapboxgl-map"><div class="mapboxgl-canary" style="visibility: hidden;"></div><div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate"><canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="1125" height="2436" style="width: 375px; height: 812px;"></canvas><div class="mapboxgl-user-location-accuracy-circle mapboxgl-marker mapboxgl-marker-anchor-center" style="transform: translate(-50%, -50%) translate(540px, 328px) rotateX(0deg) rotateZ(0deg); width: 40px; height: 40px;"></div><div class="mapboxgl-user-location-dot mapboxgl-marker mapboxgl-marker-anchor-center" style="transform: translate(-50%, -50%) translate(540px, 328px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="12" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_m.png&quot;); transform: translate(-50%, -50%) translate(169px, 388px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="26" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_s.png&quot;); transform: translate(-50%, -50%) translate(133px, 423px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="9" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_l.png&quot;); transform: translate(-50%, -50%) translate(183px, 330px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="17" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_s.png&quot;); transform: translate(-50%, -50%) translate(132px, 447px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="13" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_m.png&quot;); transform: translate(-50%, -50%) translate(156px, 425px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="14" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_m.png&quot;); transform: translate(-50%, -50%) translate(179px, 334px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="22" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_m.png&quot;); transform: translate(-50%, -50%) translate(143px, 423px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="23" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_m.png&quot;); transform: translate(-50%, -50%) translate(154px, 324px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="25" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_s.png&quot;); transform: translate(-50%, -50%) translate(298px, 318px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="10" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_l.png&quot;); transform: translate(-50%, -50%) translate(132px, 356px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="18" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_l.png&quot;); transform: translate(-50%, -50%) translate(183px, 314px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="15" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_s.png&quot;); transform: translate(-50%, -50%) translate(170px, 435px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="24" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_s.png&quot;); transform: translate(-50%, -50%) translate(250px, 473px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="16" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_s.png&quot;); transform: translate(-50%, -50%) translate(148px, 314px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="11" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/candy_l.png&quot;); transform: translate(-50%, -50%) translate(170px, 469px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="21" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_m.png&quot;); transform: translate(-50%, -50%) translate(264px, 314px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="19" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_l.png&quot;); transform: translate(-50%, -50%) translate(161px, 470px) rotateX(0deg) rotateZ(0deg);"></div><div class="marker mapboxgl-marker mapboxgl-marker-anchor-center" id="20" style="width: 3rem; height: 3rem; background-size: contain; background-image: url(&quot;img/monster_l.png&quot;); transform: translate(-50%, -50%) translate(278px, 281px) rotateX(0deg) rotateZ(0deg);"></div></div><div class="mapboxgl-control-container"><div class="mapboxgl-ctrl-top-left"><div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo" target="_blank" rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div></div><div class="mapboxgl-ctrl-top-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button class="mapboxgl-ctrl-compass" type="button" title="Reset bearing to north" aria-label="Reset bearing to north"><span class="mapboxgl-ctrl-icon" aria-hidden="true" style="transform: rotate(0deg);"></span></button></div><div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button class="mapboxgl-ctrl-geolocate mapboxgl-ctrl-geolocate-background" type="button" title="Find my location" aria-label="Find my location" aria-pressed="true"><span class="mapboxgl-ctrl-icon" aria-hidden="true"></span></button></div><div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact"><div class="mapboxgl-ctrl-attrib-inner"><a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://apps.mapbox.com/feedback/?owner=mapbox&amp;id=streets-v9&amp;access_token=pk.eyJ1IjoidmxhZG9za2kiLCJhIjoiY2szNzFrbnBqMDc0aDNjbnMxZ3R1cDlobCJ9.hrd1syWrQqTE-4Ucn0UW_w" target="_blank" rel="noopener nofollow">Improve this map</a></div></div></div><div class="mapboxgl-ctrl-bottom-left"></div><div class="mapboxgl-ctrl-bottom-right"></div></div></div>   <div class="absolute m-3 left-0 bottom-0 z-10"><button class=" px-4 uppercase text-sm font-medium relative overflow-hidden text-white transition  bg-primary-500  hover:bg-primary-400   hover:elevation-5 elevation-3  p-4 flex items-center  rounded-full  rounded "><i aria-hidden="true" class="material-icons icon text-xl transition svelte-zzky5a" style="color: default">account_circle</i> </button></div> <div class="flex absolute m-5 inset-x-0 bottom-0 justify-center t"><span class="undefined mx-1 inline-block svelte-ixci48"><button class="undefined relative overflow-hidden flex items-center rounded-full px-2 py-1 bg-transparent border border-gray-400 border-solid hover:bg-gray-50 dark-hover:bg-dark-400 bg-gray-300 dark:bg-dark-600 svelte-ixci48"><i aria-hidden="true" class="material-icons icon text-xl text-gray-600 transition svelte-zzky5a text-base" style="color: default">favorite</i> <span class="px-2 text-sm">LP: 38</span> </button></span> <span class="undefined mx-1 inline-block svelte-ixci48"><button class="undefined relative overflow-hidden flex items-center rounded-full px-2 py-1 bg-transparent border border-gray-400 border-solid hover:bg-gray-50 dark-hover:bg-dark-400 bg-gray-300 dark:bg-dark-600 svelte-ixci48"><i aria-hidden="true" class="material-icons icon text-xl text-gray-600 transition svelte-zzky5a text-base" style="color: default">stars</i> <span class="px-2 text-sm">XP: 10</span> </button></span></div> <div class="absolute m-3 right-0 bottom-0"><button class=" px-4 uppercase text-sm font-medium relative overflow-hidden text-white transition  bg-primary-500  hover:bg-primary-400   hover:elevation-5 elevation-3  p-4 flex items-center  rounded-full  rounded "><i aria-hidden="true" class="material-icons icon text-xl transition svelte-zzky5a" style="color: default">view_list</i> </button></div></body>
+<script type="text/javascript" src="./PocketMonsters JS_files/socket.io.js.download"></script><script type="text/javascript">//
+// Reload the app if server detects local change
+//
+(function() {
+    var url = document.location.protocol + '//' + document.location.host + '/__api__/autoreload';
+
+    function postStatus() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', url, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4 && /^[2]/.test(this.status)) {
+            }
+        };
+        xhr.send();
+    }
+
+    function checkForReload() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', url, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4 && /^[2]/.test(this.status)) {
+                var response = JSON.parse(this.responseText);
+                if (response.content.outdated) {
+                    postStatus();
+                    window.location.reload();
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    setInterval(checkForReload, 1000 * 3);
+})(window);
+</script>
+<script type="text/javascript">(function(window) {
+    var socket = io(document.location.protocol + '//' + document.location.host);
+
+    // Copy the functions to avoid stack overflow
+    var previousConsole = Object.assign({}, window.console);
+
+    // Overwrite these individually to preserve other log properties
+    window.console.log = function() {
+        if(previousConsole.log) {
+            previousConsole.log.apply(previousConsole, arguments);
+        }
+        socket.emit('console','log', Array.prototype.slice.call(arguments).join(' '));
+    };
+
+    window.console.warn = function() {
+        if(previousConsole.warn) {
+            previousConsole.warn.apply(previousConsole, arguments);
+        }
+        socket.emit('console','warn', Array.prototype.slice.call(arguments).join(' '));
+    };
+
+    window.console.error = function() {
+        if(previousConsole.error) {
+            previousConsole.error.apply(previousConsole, arguments);
+        }
+        socket.emit('console','error', Array.prototype.slice.call(arguments).join(' '));
+    };
+
+    window.console.assert = function(assertion) {
+        if(previousConsole.assert) {
+            previousConsole.assert.apply(previousConsole, arguments);
+        }
+        if(assertion) {
+            socket.emit('console','assert', Array.prototype.slice.call(arguments, 1).join(' '));
+        }
+    };
+})(window);
+</script>
+<script type="text/javascript">//
+// Proxy
+///
+// Intercept XHR calls that would violate single-origin policy.
+// These requests will be proxied through the server.
+//
+(function() {
+    var xhr = {};
+    xhr.open = XMLHttpRequest.prototype.open;
+
+    XMLHttpRequest.prototype.open = function(method, url) {
+        var parser = document.createElement('a');
+        parser.href = url;
+
+        // WP8 does not set hostname on some XHRs
+        if (!parser.hostname) {
+            parser.hostname = window.location.hostname;
+        }
+
+        // proxy the cross-origin request
+        if (!parser.hostname.match(window.location.hostname)) {
+            url = '/proxy/' + encodeURIComponent(url);
+        }
+
+        xhr.open.apply(this, arguments);
+    };
+})(window);
+</script>
+<script type="text/javascript">//
+// Push notification
+//
+(function() {
+    document.addEventListener('deviceready', function() {
+        var oldPushNotification;
+        if (window.PushNotification) {
+            oldPushNotification = window.PushNotification;
+            window.PushNotification.init = function(options) {
+                if (options.android) {
+                    options.android.senderID = "996231231186";
+                    options.android.icon = "pushicon";
+                    options.android.iconColor = "blue";
+                }
+                var pgdevPush = new oldPushNotification.PushNotification(options);
+                pgdevPush.on('registration', function(data) {
+                    console.log('Device Push ID: \n' + data.registrationId);
+                });
+                return pgdevPush;
+            };
+        }
+    });
+})(window);
+</script>
+
+
+
+</body></html>

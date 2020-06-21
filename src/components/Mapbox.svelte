@@ -70,8 +70,7 @@
 		// Gives only the first time the current position of the device
 		navigator.geolocation.getCurrentPosition(position => {
 			coords = [position.coords.latitude, position.coords.longitude];
-		},
-		err => {
+		}, err => {
 			// TODO: handler errors if the location retrieval has problems
 			console.log(err);
 		});
@@ -79,8 +78,7 @@
 		// Gives the device position everytime that it's changed
 		navigator.geolocation.watchPosition(position => {
 			coords = [position.coords.latitude, position.coords.longitude];
-		},
-		err => {
+		}, err => {
 			// TODO: handler errors if the location retrieval has problems
 			console.log(err);
 		});

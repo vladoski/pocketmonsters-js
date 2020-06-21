@@ -34,7 +34,8 @@
 			.then(res => {
 				localStorage.setItem('apiKey', res.session_id);
 				apiKeyStore.set(res.session_id);
-			});
+			})
+			.catch(error => replace('/error?err=' + error));
 	}
 	
 	// TODO: set this in the store. Refactor this.
@@ -42,7 +43,8 @@
 	const getProfilePromise = getProfile($apiUrlStore, apiKey);
 	getProfilePromise.then(json => {
 		profileData = json;
-	});
+	})
+	.catch(error => replace('/error?err=' + error));;
 
 	let getMapPromise;
 	let queryString;
@@ -57,15 +59,12 @@
 
 		if (queryString.type === 'CA') {
 			snackbarTitle = 'Gnam! What a delicious candy!';
-
 			showSnackbar = true;
 		} else if (queryString.type === 'MO' && queryString.died === 'true') {
 			snackbarTitle = 'You have been slain!';	
-
 			showSnackbar = true;
 		} else if (queryString.type === 'MO' && queryString.died === 'false') {
 			snackbarTitle = 'You have killed the monster!';	
-
 			showSnackbar = true;
 		}
 	});
@@ -79,13 +78,15 @@
 			getMapPromise.then(res => {
 				mapElements = res.mapobjects;
 				mapElementsStore.set(mapElements);
-			});
+			})
+			.catch(error => replace('/error?err=' + error));
 		} else {
 			getMap($apiUrlStore, apiKey)
 				.then(res => {
 					mapElements = res.mapobjects;
 					mapElementsStore.set(mapElements);
-				});
+				})
+				.catch(error => replace('/error?err=' + error));
 		}
 	}
 </script>

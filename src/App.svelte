@@ -33,7 +33,6 @@
 	// Overwrites and handles Android's system back button behaviour ()
 	document.addEventListener('backbutton', e => {
 		e.preventDefault();
-		//alert($location)
 
 		switch ($location) {
 			case '/fighteat':
@@ -45,7 +44,9 @@
 			case '/profile/edit':
 				replace('/profile');
 				break;
-
+			case '/error':
+				replace('/');
+				break;
 			default:
 				replace('/');
 				break;

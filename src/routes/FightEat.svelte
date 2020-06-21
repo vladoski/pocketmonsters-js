@@ -1,7 +1,7 @@
 <script>
     import qs from 'qs';
     import { onMount } from 'svelte';
-    import {push, querystring, location} from 'svelte-spa-router'
+    import {push, replace, querystring, location} from 'svelte-spa-router'
     import { apiKeyStore, apiUrlStore, mapElementsStore } from '../store.js';
     import { getImage, fightEat } from '../utils/apihandler.js';
 
@@ -24,14 +24,16 @@
     const getImagePromise = getImage($apiUrlStore, $apiKeyStore, elementId)
         .then(imgBase64 => {
             elementImage = imgBase64.img;
-        });
+        })
+        .catch(error => replace('/error?err=' + error));
 
     function fightEatNow() {
         let getFightEatPromise = fightEat($apiUrlStore, $apiKeyStore, elementId)
             .then(json => {
                 const queryString = qs.stringify({...json, type: element.type});
                 push('/?' + queryString);
-            });
+            })
+            .catch(error => replace('/error?err=' + error));
     }
 </script>
 
