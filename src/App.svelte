@@ -5,6 +5,9 @@
 
 	import "smelte/src/tailwind.css";
 
+	// Unlock orientation on mobile devices
+	window.screen.orientation.unlock()
+
 	function noPermissionGranted() {
 		alert('This app requires your location to be used');
 		navigator.app.exitApp();

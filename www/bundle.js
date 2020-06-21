@@ -16175,7 +16175,7 @@ var app = (function () {
     		c: function create() {
     			body = element("body");
     			create_component(router.$$.fragment);
-    			add_location(body, file$p, 56, 0, 1602);
+    			add_location(body, file$p, 59, 0, 1683);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -16221,7 +16221,11 @@ var app = (function () {
     	let $location;
     	validate_store(location, "location");
     	component_subscribe($$self, location, $$value => $$invalidate(0, $location = $$value));
+    	window.screen.orientation.unlock();
 
+    	// Add location marker on the map and geolocation functionality
+    	// Checks if the user gave location permissions, if not then the app can't be used (only on Android)
+    	// This needs to be executed on deviceready, so the plugins are available to use
     	document.addEventListener("deviceready", e => {
     		cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
     			if (!checkStatus.hasPermission) {
