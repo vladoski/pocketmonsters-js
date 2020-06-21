@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@turf/distance": "^6.0.1",
-    "cordova-android": "8.1.0",
+    "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-plugin-battery-status": "^2.0.3",
     "cordova-plugin-camera": "^4.1.0",
@@ -58,7 +58,8 @@
       "cordova-plugin-whitelist": {}
     },
     "platforms": [
-      "browser"
+      "browser",
+      "android"
     ]
   }
 }
