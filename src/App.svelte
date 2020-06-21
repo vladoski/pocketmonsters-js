@@ -17,19 +17,23 @@
 	// Checks if the user gave location permissions, if not then the app can't be used (only on Android)
 	// This needs to be executed on deviceready, so the plugins are available to use
 	document.addEventListener('deviceready', e => {
-		cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
-			if (!checkStatus.hasPermission) {
-				cordova.plugins.permissions.requestPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, requestStatus => {
-					if (!requestStatus.hasPermission) {
+		try {
+			cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
+				if (!checkStatus.hasPermission) {
+					cordova.plugins.permissions.requestPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, requestStatus => {
+						if (!requestStatus.hasPermission) {
+							noPermissionGranted();
+						} else {
+							replace('/');
+						}
+					}, (error) => {
 						noPermissionGranted();
-					} else {
-						replace('/');
-					}
-				}, (error) => {
-					noPermissionGranted();
-				});
-			}
-		});
+					});
+				}
+			});
+		} catch (error) {
+			replace('/error?err='+ error);
+		}
 	});
 
 	// Overwrites and handles Android's system back button behaviour ()

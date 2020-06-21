@@ -16816,7 +16816,7 @@ var app = (function () {
     		c: function create() {
     			body = element("body");
     			create_component(router.$$.fragment);
-    			add_location(body, file$q, 64, 0, 1689);
+    			add_location(body, file$q, 68, 0, 1772);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -16868,23 +16868,27 @@ var app = (function () {
     	// Checks if the user gave location permissions, if not then the app can't be used (only on Android)
     	// This needs to be executed on deviceready, so the plugins are available to use
     	document.addEventListener("deviceready", e => {
-    		cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
-    			if (!checkStatus.hasPermission) {
-    				cordova.plugins.permissions.requestPermission(
-    					cordova.plugins.permissions.ACCESS_FINE_LOCATION,
-    					requestStatus => {
-    						if (!requestStatus.hasPermission) {
+    		try {
+    			cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
+    				if (!checkStatus.hasPermission) {
+    					cordova.plugins.permissions.requestPermission(
+    						cordova.plugins.permissions.ACCESS_FINE_LOCATION,
+    						requestStatus => {
+    							if (!requestStatus.hasPermission) {
+    								noPermissionGranted();
+    							} else {
+    								replace$1("/");
+    							}
+    						},
+    						error => {
     							noPermissionGranted();
-    						} else {
-    							replace$1("/");
     						}
-    					},
-    					error => {
-    						noPermissionGranted();
-    					}
-    				);
-    			}
-    		});
+    					);
+    				}
+    			});
+    		} catch(error) {
+    			replace$1("/error?err=" + error);
+    		}
     	});
 
     	// Overwrites and handles Android's system back button behaviour ()
