@@ -20,7 +20,6 @@
 		cordova.plugins.permissions.checkPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, checkStatus => {
 			if (!checkStatus.hasPermission) {
 				cordova.plugins.permissions.requestPermission(cordova.plugins.permissions.ACCESS_FINE_LOCATION, requestStatus => {
-					console.log('hasPermission: ' + requestStatus.hasPermission);
 					if (!requestStatus.hasPermission) {
 						noPermissionGranted();
 					} else {
@@ -44,12 +43,18 @@
 				replace('/');
 				break;
 
+			case '/playerprofile':
+				replace('/ranking');
+				break;
+
 			case '/profile/edit':
 				replace('/profile');
 				break;
+			
 			case '/error':
 				replace('/');
 				break;
+
 			default:
 				replace('/');
 				break;

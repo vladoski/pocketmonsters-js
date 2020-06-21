@@ -73,6 +73,32 @@ export async function getRanking(url, session_id) {
     }
 }
 
+export async function getRankingWithId(url, session_id) {
+    try {
+        const res = await fetch(url + '/ranking2.php', {
+            method: 'POST',
+            body: JSON.stringify({ session_id })
+        });
+
+        return res.json();
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export async function getProfileById(url, session_id, id) {
+    try {
+        const res = await fetch(url + '/getprofilebyid.php', {
+            method: 'POST',
+            body: JSON.stringify({ session_id, id: '' + id})
+        });
+
+        return res.json();
+    } catch (e) {
+        console.log('ERROR' + e);
+    }
+}
+
 export async function fightEat(url, session_id, target_id) {
     try {
         const res = await fetch(url + '/fighteat.php', {

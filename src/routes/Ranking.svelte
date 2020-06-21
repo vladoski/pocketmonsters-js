@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { push } from 'svelte-spa-router';
     import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
-    import { getRanking } from '../utils/apihandler.js';
+    import { getRankingWithId } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
     import MaterialList from '../components/MaterialList.svelte';
@@ -11,7 +11,7 @@
     let rankingData;
     let rankingList;
 
-    const rankingPromise = getRanking($apiUrlStore, $apiKeyStore);
+    const rankingPromise = getRankingWithId($apiUrlStore, $apiKeyStore);
     rankingPromise.then(res => {
             rankingData = res.ranking;
 
@@ -26,7 +26,8 @@
                     listItem.image = 'data:image/jpeg;charset=utf-8;base64,' + ranking.img;
                 }
 
-                listItem.subheading = `XP: ${ranking.xp} - LP: ${ranking.lp}`;
+                listItem.subheading = `XP: ${ranking.xp}`;
+                listItem.playerId = ranking.id;
 
                 return listItem;
             });
@@ -42,7 +43,9 @@
             <Header 
                 title="Ranking"
                 goto={'/'} />
-            <MaterialList class="-mt-4" items={rankingList} />
+            <MaterialList
+                class="-mt-4"
+                items={rankingList} />
         {:catch}
         <p>Error</p>
     {/await}

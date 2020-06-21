@@ -1,8 +1,9 @@
 <script>
+    import qs from 'qs';
     import { onMount } from 'svelte';
-    import { push, replace } from 'svelte-spa-router';
+    import { replace, querystring } from 'svelte-spa-router';
     import { apiKeyStore, apiUrlStore, profileDataStore } from '../store.js';
-    import { getProfile } from '../utils/apihandler.js';
+    import { getProfileById } from '../utils/apihandler.js';
 
     import Header from '../components/Header.svelte';
     import LoadingSpinner from '../components/LoadingSpinner.svelte';
@@ -10,12 +11,13 @@
     import Image from 'smelte/src/components/Image';
     import Button from "smelte/src/components/Button";
     
+    const playerId = qs.parse($querystring).id;
+
     let isLandscape;
     let profileData;
-    let getProfilePromise = getProfile($apiUrlStore, $apiKeyStore)
+    let getProfilePromise = getProfileById($apiUrlStore, $apiKeyStore, playerId)
         .then(json => {
-            profileData = json;
-            profileDataStore.set(profileData);
+            profileData = json; 
         })
         .catch(error => replace('/error?err=' + error));
     
@@ -48,8 +50,8 @@
     <LoadingSpinner />
     {:then _}
         <Header 
-            title="Profile"
-            goto={'/'}/>
+            title="Player"
+            goto={'/ranking'}/>
 
         {#if !isLandscape}
             <div class="flex content-center justify-center m-5">
@@ -91,9 +93,6 @@
                 </div>
             </div>
         {/if}
-        <div class="flex content-end justify-center m-5">
-            <Button on:click={() => push('/profile/edit') }>Edit profile</Button>
-        </div>
     {:catch}
         <p>Error</p>
 {/await}

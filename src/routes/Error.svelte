@@ -7,7 +7,6 @@
     import { Card, Button, Image } from 'smelte';
     
     const errorString = qs.parse($querystring).err;
-    console.log(errorString);
 </script>
 <Header 
     title="Error" 

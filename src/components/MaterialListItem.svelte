@@ -1,6 +1,7 @@
 <script>
   import { ClassBuilder } from "smelte/src/utils/classes.js";
   import { createEventDispatcher } from "svelte";
+  import { replace } from 'svelte-spa-router';
   import Icon from "smelte/src/components/Icon";
   import Image from 'smelte/src/components/Image';
   import createRipple from "smelte/src/components/Ripple/ripple.js";
@@ -21,6 +22,8 @@
   export let selectedClasses = selectedClassesDefault;
   export let subheadingClasses = subheadingClassesDefault;
 
+  export let playerId = null;
+
   let className = "";
   export {className as class};
 
@@ -36,6 +39,10 @@
     if (disabled) return;
     value = id;
     dispatch('change', id, to);
+  }
+
+  function showPlayerProfile() {
+    replace('/playerprofile?id=' + playerId);
   }
 
   export let classes = classesDefault;
@@ -64,6 +71,7 @@
   {tabindex}
   on:keypress={change}
   on:click={change}
+  on:click={showPlayerProfile}
   on:click>
   <p class={tabindex < 4 ? "text-3xl mr-5 text-right text-primary-500 text-secondary-500" : 'text-3xl mr-5 text-right text-primary-500'}
      class:pushImage={tabindex < 10}>{tabindex < 10 ? '\xa0' + tabindex : tabindex}</p>
